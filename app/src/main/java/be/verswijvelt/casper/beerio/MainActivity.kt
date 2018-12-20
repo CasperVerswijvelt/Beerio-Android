@@ -8,12 +8,15 @@ import android.util.Log
 import be.verswijvelt.casper.beerio.Fragments.BaseFragment
 import be.verswijvelt.casper.beerio.Fragments.CategoriesFragment
 import be.verswijvelt.casper.beerio.Fragments.MyBeersFragment
+import be.verswijvelt.casper.beerio.data.services.IDataService
 import kotlinx.android.synthetic.main.activity_main.*
+import net.danlew.android.joda.JodaTimeAndroid
 import java.util.*
 
 
 
 class MainActivity : AppCompatActivity() {
+
 
 
     private lateinit var backStacks: HashMap<String, Stack<Fragment>>
@@ -38,6 +41,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        JodaTimeAndroid.init(this)
+
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -53,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         showFragmentForCurrentTab()
+
 
     }
 
@@ -90,7 +98,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (backStacks[currentTab]!!.size === 1) {
+        if (backStacks[currentTab]!!.size == 1) {
             finish()
             return
         }
