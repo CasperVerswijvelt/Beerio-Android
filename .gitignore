@@ -9,5 +9,7 @@
 /build
 /captures
 .externalNativeBuild
-
+app/build/
+.idea/
+*.apk
 
