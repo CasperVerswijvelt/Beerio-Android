@@ -1,11 +1,14 @@
-package be.verswijvelt.casper.beerio.Fragments
+package be.verswijvelt.casper.beerio.fragments
 
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import be.verswijvelt.casper.beerio.R
+import be.verswijvelt.casper.beerio.viewModels.StylesViewModel
+import be.verswijvelt.casper.beerio.viewModels.StylesViewModelFactory
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -21,10 +24,8 @@ import be.verswijvelt.casper.beerio.R
  */
 class MyBeersFragment : BaseFragment() {
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    init {
+        super.fragmentTitle = "My Beers"
     }
 
     override fun onCreateView(

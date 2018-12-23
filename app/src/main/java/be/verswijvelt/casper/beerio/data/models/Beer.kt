@@ -2,6 +2,7 @@ package be.verswijvelt.casper.beerio.data.models
 
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONLabels
 import org.joda.time.DateTime
+import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.*
 
@@ -24,7 +25,7 @@ var year : RealmOptional<Int> = RealmOptional<Int>()
 var isRetired: RealmOptional<Bool> = RealmOptional<Bool>()
 var isOrganic: RealmOptional<Bool> = RealmOptional<Bool>()*/
 
-class Beer {
+class Beer : Serializable{
     var name: String = ""
     var description: String? = null
     var foodPairings: String? = null

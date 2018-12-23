@@ -1,16 +1,11 @@
 package be.verswijvelt.casper.beerio.data.deserialization.adapters
 
-import android.util.Log
-import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONBeer
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONBeersWrapper
 import be.verswijvelt.casper.beerio.data.models.Beer
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
-import net.danlew.android.joda.JodaTimeAndroid
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-import java.text.DateFormat
-import java.time.format.DateTimeFormatter
 
 
 class JSONBeerAdapter {
@@ -18,7 +13,8 @@ class JSONBeerAdapter {
     fun beerFromJson(beerJsonWrapper: JSONBeersWrapper): List<Beer> {
         //In this method we build up the actual domain objects according to our json models. Had to do it this way since somehow our models and json didn't align enough and I couldn't find the cause.
         val list:ArrayList<Beer> = ArrayList()
-        beerJsonWrapper.data.forEach { beerJson ->
+        beerJsonWrapper.data?.forEach { beerJson ->
+
             val beer = Beer()
 
             beer.name = beerJson.name
@@ -31,7 +27,7 @@ class JSONBeerAdapter {
             beer.isRetired = if (beerJson.isRetired == "Y") true else if (beerJson.isRetired == "N") false else null
             beer.originalGravity = beerJson.originalGravity
             beer.labels = beerJson.labels
-            beer.year = beerJson.year
+            beer.year = if(beerJson.year==0) null else beerJson.year
 
             list.add(beer)
         }

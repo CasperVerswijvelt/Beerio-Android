@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:id="@+id/row_beerdetails_simple"
+        android:background="#FFF"
+        android:elevation="4dp"
+        android:minHeight="50dp">
+
+    <TextView
+            android:text="Key"
+            android:id="@+id/beerdetails_key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_centerVertical="true"
+            />
+
+    <TextView
+            android:text="Value"
+            android:id="@+id/beerdetails_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"/>
+
+</RelativeLayout>

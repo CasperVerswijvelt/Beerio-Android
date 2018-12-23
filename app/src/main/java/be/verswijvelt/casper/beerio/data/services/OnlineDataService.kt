@@ -1,5 +1,6 @@
 package be.verswijvelt.casper.beerio.data.services
 
+import android.util.Log
 import be.verswijvelt.casper.beerio.data.deserialization.adapters.JSONBeerAdapter
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.*
 import be.verswijvelt.casper.beerio.data.models.Beer
@@ -17,7 +18,7 @@ class OnlineDataService(var apiKey: String = "4593fe9ecb788f8ce42f65d592d7de35")
 
     override fun fetchCategories(completion: (List<JSONCategory>?) -> Unit) {
         val url = baseUrl + "categories"
-
+        Log.d("FETCHING","Fetching categories")
         url.httpGet(listOf(apiKeyParameter()))
             .responseString { _, _, result ->
                 when (result) {
@@ -49,7 +50,7 @@ class OnlineDataService(var apiKey: String = "4593fe9ecb788f8ce42f65d592d7de35")
 
     override fun fetchStyles(categoryId: Int, completion: (List<JSONStyle>?) -> Unit) {
         val url = baseUrl + "styles"
-
+        Log.d("FETCHING","Fetching styles")
         url.httpGet(listOf(apiKeyParameter()))
             .responseString { _, _, result ->
                 when (result) {
@@ -83,7 +84,7 @@ class OnlineDataService(var apiKey: String = "4593fe9ecb788f8ce42f65d592d7de35")
 
     override fun fetchBeers(styleId: Int, completion: (List<Beer>?) -> Unit) {
         val url = baseUrl + "beers"
-
+        Log.d("FETCHING","Fetching beers")
         url.httpGet(listOf(apiKeyParameter(), Pair("styleId",styleId)))
             .responseString { _, _, result ->
                 when (result) {
@@ -101,8 +102,8 @@ class OnlineDataService(var apiKey: String = "4593fe9ecb788f8ce42f65d592d7de35")
                         val data = result.get()
                         val jsonAdapter : JsonAdapter<List<Beer>> = moshi.adapter(Types.newParameterizedType(List::class.java, Beer::class.java))
                         try {
-                            val beer = jsonAdapter.fromJson(data)
-                            completion(null)
+                            val beers = jsonAdapter.fromJson(data)
+                            completion(beers)
                         } catch (e: Exception) {
                             e.printStackTrace()
                             completion(null)
