@@ -9,17 +9,19 @@ import android.arch.lifecycle.ViewModelProvider
 import android.util.Log
 
 
-class StylesViewModel(private val categoryId : Int) : ViewModel() {
+class StylesViewModel(private val categoryId : Int, val categoryName:String, val cateogryDescription:String?) : ViewModel() {
 
     private val styles: MutableLiveData<List<JSONStyle>> by lazy {
         MutableLiveData<List<JSONStyle>>()
     }
 
     init {
+        loadData()
+    }
+
+    fun loadData() {
         IDataService.getInstance().fetchStyles(categoryId) {
-            if(it != null) {
-                styles.postValue(it)
-            }
+            styles.postValue(it)
         }
     }
 
@@ -29,8 +31,8 @@ class StylesViewModel(private val categoryId : Int) : ViewModel() {
 }
 
 
-class StylesViewModelFactory(private val categoryId: Int) :  ViewModelProvider.Factory {
+class StylesViewModelFactory(private val categoryId: Int, private val categoryName:String, private val cateogryDescription:String?) :  ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return StylesViewModel(categoryId) as T
+        return StylesViewModel(categoryId,categoryName,cateogryDescription) as T
     }
 }

@@ -12,7 +12,8 @@ import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.adapters.BeerAdapter
 import be.verswijvelt.casper.beerio.viewModels.BeersViewModel
 import be.verswijvelt.casper.beerio.viewModels.BeersViewModelFactory
-import kotlinx.android.synthetic.main.empty_dataset.*
+import kotlinx.android.synthetic.main.empty_dataset_placeholder.*
+import kotlinx.android.synthetic.main.error_placeholder.*
 import kotlinx.android.synthetic.main.fragment_beers.*
 
 class BeersFragment : BaseFragment() {
@@ -22,7 +23,7 @@ class BeersFragment : BaseFragment() {
     private var styleDescription :String?= null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, BeersViewModelFactory(styleId)).get(BeersViewModel::class.java)
+        ViewModelProviders.of(this, BeersViewModelFactory(styleId,styleName,styleDescription)).get(BeersViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,13 +50,30 @@ class BeersFragment : BaseFragment() {
         noDataText.text = "No beers could be found for this style"
         showLoader(true)
         viewModel.getBeers().observe(this, Observer {
+
             if(it != null) {
-                showLoader(false)
                 (recyclerView.adapter as BeerAdapter).setCategories(it)
-                recyclerView.scheduleLayoutAnimation()
-                emptyDataSetPlaceHolder.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            } else {
+                (recyclerView.adapter as BeerAdapter).setCategories(listOf())
             }
+
+            emptyDataSetPlaceHolder.visibility = if(it != null && it.isEmpty()) View.VISIBLE else View.GONE
+            error_placeholder.visibility = if(it == null) View.VISIBLE else View.GONE
+            showLoader(false)
+            swipeRefresh.isRefreshing = false
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        swipeRefresh.setOnRefreshListener {
+            viewModel.loadData()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        swipeRefresh.setOnRefreshListener(null)
     }
 
 
@@ -79,6 +97,12 @@ class BeersFragment : BaseFragment() {
             fragment.fragmentTitle = styleName
 
             return fragment
+        }
+    }
+
+    override fun getTitleClickedHandler(): () -> Unit {
+        return {
+            navigationController.showDialog(viewModel.styleName, viewModel.styleDescription)
         }
     }
 

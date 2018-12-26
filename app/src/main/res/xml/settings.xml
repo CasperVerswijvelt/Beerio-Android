@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.v7.preference.PreferenceCategory
+            android:title="BreweryDB API">
+
+        <android.support.v7.preference.EditTextPreference
+                android:key="apiKey"
+                android:title="BreweryDB API Key"
+                android:summary="Input here your personal BreweryDB API key"
+                android:dialogMessage="Input here your personal BreweryDB API key"
+                android:defaultValue="" />
+
+        <Preference android:title="Check API key"
+                    android:key="checkApiKey"
+                    android:summary="Click here to check wether the API key filled in is valid"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+</android.support.v7.preference.PreferenceScreen>

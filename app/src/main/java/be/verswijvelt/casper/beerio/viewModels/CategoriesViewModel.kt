@@ -12,15 +12,17 @@ class CategoriesViewModel : ViewModel() {
     }
 
     init {
+        loadData()
+    }
+
+    fun loadData() {
         IDataService.getInstance().fetchCategories {
-            if(it != null) {
-                categories.postValue(it)
-            }
+            categories.postValue(it)
         }
     }
 
 
-    fun getCategories() : LiveData<List<JSONCategory>> {
+    fun getCategories(): LiveData<List<JSONCategory>> {
         return categories
     }
 

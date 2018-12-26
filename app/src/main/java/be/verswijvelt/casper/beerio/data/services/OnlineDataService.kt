@@ -10,11 +10,23 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import java.lang.Exception
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 
-class OnlineDataService(var apiKey: String = "4593fe9ecb788f8ce42f65d592d7de35") : IDataService {
+
+class OnlineDataService(var preferences : SharedPreferences? = null) : IDataService {
 
     val baseUrl : String = "https://api.brewerydb.com/v2/"
 
+    private val apiKey : String
+        get() {
+            if(preferences == null) return ""
+            return preferences!!.getString("apiKey","")!!
+        }
+
+    override fun setSharedPreferences(preferences: SharedPreferences) {
+        this.preferences =preferences
+    }
 
     override fun fetchCategories(completion: (List<JSONCategory>?) -> Unit) {
         val url = baseUrl + "categories"
@@ -136,6 +148,7 @@ class OnlineDataService(var apiKey: String = "4593fe9ecb788f8ce42f65d592d7de35")
 
     //Helper methods
     private fun apiKeyParameter() : Pair<String,Any> {
+        Log.d("BEERIODEBUG", "api key is " + apiKey)
         return Pair("key",apiKey)
     }
 

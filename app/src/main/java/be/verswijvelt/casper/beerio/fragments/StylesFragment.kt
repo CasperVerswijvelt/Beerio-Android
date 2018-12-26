@@ -8,22 +8,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-
 import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.adapters.StyleAdapter
 import be.verswijvelt.casper.beerio.viewModels.StylesViewModel
 import be.verswijvelt.casper.beerio.viewModels.StylesViewModelFactory
+import kotlinx.android.synthetic.main.empty_dataset_placeholder.*
+import kotlinx.android.synthetic.main.error_placeholder.*
 import kotlinx.android.synthetic.main.fragment_styles.*
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.DividerItemDecoration.HORIZONTAL
-import kotlinx.android.synthetic.main.empty_dataset.*
 
 
 class StylesFragment : BaseFragment() {
 
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this,StylesViewModelFactory(categoryId)).get(StylesViewModel::class.java)
+        ViewModelProviders.of(this,StylesViewModelFactory(categoryId, categoryName, categoryDescription)).get(StylesViewModel::class.java)
     }
 
     private var categoryId = -1
@@ -56,12 +54,28 @@ class StylesFragment : BaseFragment() {
         recyclerView.layoutManager = LinearLayoutManager(this.context, LinearLayout.VERTICAL, false)
         viewModel.getStyles().observe(this, Observer {
             if(it != null) {
-                showLoader(false)
                 (recyclerView.adapter as StyleAdapter).setStyles(it)
-                recyclerView.scheduleLayoutAnimation()
-                emptyDataSetPlaceHolder.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            } else {
+                (recyclerView.adapter as StyleAdapter).setStyles(listOf())
             }
+
+            emptyDataSetPlaceHolder.visibility = if(it != null && it.isEmpty()) View.VISIBLE else View.GONE
+            error_placeholder.visibility = if(it == null) View.VISIBLE else View.GONE
+            showLoader(false)
+            swipeRefresh.isRefreshing = false
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        swipeRefresh.setOnRefreshListener {
+            viewModel.loadData()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        swipeRefresh.setOnRefreshListener(null)
     }
 
     companion object {
@@ -84,6 +98,12 @@ class StylesFragment : BaseFragment() {
             fragment.fragmentTitle = categoryName
 
             return fragment
+        }
+    }
+
+    override fun getTitleClickedHandler(): () -> Unit {
+        return {
+            navigationController.showDialog(viewModel.categoryName, viewModel.cateogryDescription)
         }
     }
 

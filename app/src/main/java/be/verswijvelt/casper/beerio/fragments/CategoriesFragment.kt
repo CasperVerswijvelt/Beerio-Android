@@ -5,18 +5,12 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.animation.Animation
 import android.widget.LinearLayout
 import be.verswijvelt.casper.beerio.viewModels.CategoriesViewModel
 import be.verswijvelt.casper.beerio.adapters.CategoryAdapter
 import kotlinx.android.synthetic.main.fragment_categories.*
-import android.animation.LayoutTransition
-import android.R
-
-
+import android.view.*
+import kotlinx.android.synthetic.main.error_placeholder.*
 
 
 /**
@@ -38,6 +32,7 @@ class CategoriesFragment : BaseFragment() {
         ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,12 +48,31 @@ class CategoriesFragment : BaseFragment() {
         showLoader(true)
         viewModel.getCategories().observe(this, Observer {
             if(it != null) {
-                showLoader(false)
                 (recyclerView.adapter as CategoryAdapter).setCategories(it)
-                recyclerView.scheduleLayoutAnimation()
+            } else {
+                (recyclerView.adapter as CategoryAdapter).setCategories(listOf())
             }
+            error_placeholder.visibility = if(it == null) View.VISIBLE else View.GONE
+            showLoader(false)
+            swipeRefresh.isRefreshing = false
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        swipeRefresh.setOnRefreshListener {
+            viewModel.loadData()
+        }
+    }
 
+    override fun onPause() {
+        super.onPause()
+        swipeRefresh.setOnRefreshListener(null)
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(be.verswijvelt.casper.beerio.R.menu.options_settings, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 }
