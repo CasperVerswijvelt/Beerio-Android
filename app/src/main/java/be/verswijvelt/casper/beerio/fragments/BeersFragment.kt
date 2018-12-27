@@ -23,7 +23,7 @@ class BeersFragment : BaseFragment() {
     private var styleDescription :String?= null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, BeersViewModelFactory(styleId,styleName,styleDescription)).get(BeersViewModel::class.java)
+        ViewModelProviders.of(this, BeersViewModelFactory(styleId,styleName,styleDescription, activity!!.application)).get(BeersViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,15 +52,20 @@ class BeersFragment : BaseFragment() {
         viewModel.getBeers().observe(this, Observer {
 
             if(it != null) {
-                (recyclerView.adapter as BeerAdapter).setCategories(it)
+                (recyclerView.adapter as BeerAdapter).setBeers(it)
             } else {
-                (recyclerView.adapter as BeerAdapter).setCategories(listOf())
+                (recyclerView.adapter as BeerAdapter).setBeers(listOf())
             }
 
             emptyDataSetPlaceHolder.visibility = if(it != null && it.isEmpty()) View.VISIBLE else View.GONE
             error_placeholder.visibility = if(it == null) View.VISIBLE else View.GONE
             showLoader(false)
             swipeRefresh.isRefreshing = false
+        })
+        viewModel.savedBeers.observe(this, Observer {
+            if(it != null) {
+                (recyclerView.adapter as BeerAdapter).setSavedBeers(it)
+            }
         })
     }
 

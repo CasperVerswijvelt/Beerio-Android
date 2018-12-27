@@ -4,9 +4,8 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel;
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONStyle
-import be.verswijvelt.casper.beerio.data.services.IDataService
+import be.verswijvelt.casper.beerio.data.services.IOnlineDataService
 import android.arch.lifecycle.ViewModelProvider
-import android.util.Log
 
 
 class StylesViewModel(private val categoryId : Int, val categoryName:String, val cateogryDescription:String?) : ViewModel() {
@@ -20,7 +19,7 @@ class StylesViewModel(private val categoryId : Int, val categoryName:String, val
     }
 
     fun loadData() {
-        IDataService.getInstance().fetchStyles(categoryId) {
+        IOnlineDataService.getInstance().fetchStyles(categoryId) {
             styles.postValue(it)
         }
     }

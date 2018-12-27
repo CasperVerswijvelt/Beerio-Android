@@ -11,10 +11,9 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import java.lang.Exception
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 
 
-class OnlineDataService(var preferences : SharedPreferences? = null) : IDataService {
+class OnlineDataService(var preferences : SharedPreferences? = null) : IOnlineDataService {
 
     val baseUrl : String = "https://api.brewerydb.com/v2/"
 

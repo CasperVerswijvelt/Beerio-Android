@@ -1,15 +1,14 @@
 package be.verswijvelt.casper.beerio.data.services
 
 import android.content.SharedPreferences
-import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONBeer
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONCategory
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONStyle
 import be.verswijvelt.casper.beerio.data.models.Beer
 
-interface IDataService{
+interface IOnlineDataService{
     companion object {
-        private var instance: IDataService? = null
-        fun getInstance(): IDataService {
+        private var instance: IOnlineDataService? = null
+        fun getInstance(): IOnlineDataService {
             if (instance == null) {
                 instance = OnlineDataService()
             }

@@ -4,7 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONCategory
-import be.verswijvelt.casper.beerio.data.services.IDataService
+import be.verswijvelt.casper.beerio.data.services.IOnlineDataService
 
 class CategoriesViewModel : ViewModel() {
     private val categories: MutableLiveData<List<JSONCategory>> by lazy {
@@ -16,7 +16,7 @@ class CategoriesViewModel : ViewModel() {
     }
 
     fun loadData() {
-        IDataService.getInstance().fetchCategories {
+        IOnlineDataService.getInstance().fetchCategories {
             categories.postValue(it)
         }
     }

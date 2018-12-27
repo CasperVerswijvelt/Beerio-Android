@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.support.v7.preference.Preference
 import be.verswijvelt.casper.beerio.NavigationController
-import be.verswijvelt.casper.beerio.data.services.IDataService
+import be.verswijvelt.casper.beerio.data.services.IOnlineDataService
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -34,7 +34,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             (activity as NavigationController).showLoader(true)
 
 
-            IDataService.getInstance().isApiKeyValid {
+            IOnlineDataService.getInstance().isApiKeyValid {
                 activity?.runOnUiThread {
                     button.summary = if(it)"This API key is valid" else "This API key is not valid"
                     (activity as NavigationController).showLoader(false)

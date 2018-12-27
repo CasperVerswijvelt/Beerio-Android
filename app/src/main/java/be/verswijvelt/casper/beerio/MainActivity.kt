@@ -1,6 +1,7 @@
 package be.verswijvelt.casper.beerio
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -8,25 +9,43 @@ import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.text.InputType
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONCategory
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONStyle
 import be.verswijvelt.casper.beerio.data.models.Beer
-import be.verswijvelt.casper.beerio.data.services.IDataService
+import be.verswijvelt.casper.beerio.data.models.Note
+import be.verswijvelt.casper.beerio.data.room.BeerRoomDatabase
+import be.verswijvelt.casper.beerio.data.services.BeerRepository
+import be.verswijvelt.casper.beerio.data.services.IOnlineDataService
 import be.verswijvelt.casper.beerio.fragments.*
 import be.verswijvelt.casper.beerio.viewModels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.danlew.android.joda.JodaTimeAndroid
-import org.w3c.dom.Text
+import java.io.File
+import kotlin.coroutines.CoroutineContext
 
 
 class MainActivity : AppCompatActivity(), NavigationController {
+
+
+    private lateinit var repository : BeerRepository
+    private var parentJob = Job()
+    private val coroutineContext: CoroutineContext
+        get() = parentJob + Dispatchers.Main
+    private val scope = CoroutineScope(coroutineContext)
+
+
     private val viewModel by lazy {
         ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
     }
@@ -57,16 +76,18 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        super.onCreate(savedInstanceState)
         JodaTimeAndroid.init(this)
 
-        IDataService.getInstance().setSharedPreferences(PreferenceManager.getDefaultSharedPreferences(this))
+        IOnlineDataService.getInstance().setSharedPreferences(PreferenceManager.getDefaultSharedPreferences(this))
 
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         showLoader(false)
+
+        val beerDao = BeerRoomDatabase.getDatabase(application).beerDao()
+        repository = BeerRepository(beerDao)
 
     }
 
@@ -210,7 +231,6 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
 
     //NavigationController interface implementation
-
     override fun showLoader(show: Boolean) {
         progressBar?.visibility = if (show) View.VISIBLE else View.GONE
     }
@@ -256,12 +276,26 @@ class MainActivity : AppCompatActivity(), NavigationController {
     }
 
     override fun showBeer(beer: Beer) {
-        pushFragments(AppConstants.TAB_BROWSE_ONLINE, BeerDetailsFragment.newInstance(beer), true)
+        pushFragments(viewModel.currentTab, BeerDetailsFragment.newInstance(beer), true)
     }
 
     override fun showImage(toolbarTitle: String, url: String) {
-        pushFragments(AppConstants.TAB_BROWSE_ONLINE, ImageFragment.newInstance(url, toolbarTitle), true)
+        pushFragments(viewModel.currentTab, ImageFragment.newInstance(url, toolbarTitle), true)
     }
+
+
+    override fun deleteBeer(beerId: String) = scope.launch(Dispatchers.IO){
+        repository.delete(beerId)
+    }
+
+    override fun updateBeer(beer: Beer) = scope.launch(Dispatchers.IO) {
+        repository.update(beer)
+    }
+
+    override fun getFilesDirectory(): File {
+        return filesDir
+    }
+
 
 }
 
@@ -276,5 +310,9 @@ interface NavigationController {
     fun showBeer(beer: Beer)
     fun showImage(toolbarTitle: String, url: String)
 
+    fun deleteBeer(beerId:String) : Job
+    fun updateBeer(beer:Beer) : Job
+
+    fun getFilesDirectory() : File
 
 }

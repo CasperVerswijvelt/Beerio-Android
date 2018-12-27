@@ -2,6 +2,7 @@ package be.verswijvelt.casper.beerio.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import kotlinx.android.synthetic.main.row_beer.view.*
 class BeerAdapter(val navigationController: NavigationController) : Adapter<BeerHolder>(){
 
     private var beers : List<Beer> = ArrayList()
+    private var savedBeers : List<Beer> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, p: Int): BeerHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -24,6 +26,10 @@ class BeerAdapter(val navigationController: NavigationController) : Adapter<Beer
     override fun onBindViewHolder(holder: BeerHolder, position: Int) {
         val beer = beers[position]
         holder.name.text = beer.name
+        if(savedBeers.find { it.id == beer.id } != null) {
+            holder.isSavedImage.setImageResource(R.drawable.ic_check_black_24dp)
+        } else
+            holder.isSavedImage.setImageDrawable(null)
         Picasso.get()
             .load(beer.labels?.icon)
             .placeholder(R.drawable.beer)
@@ -39,13 +45,20 @@ class BeerAdapter(val navigationController: NavigationController) : Adapter<Beer
     }
 
 
-    fun setCategories(list : List<Beer>) {
+    fun setBeers(list : List<Beer>) {
         this.beers = list
         notifyDataSetChanged()
     }
+
+    fun setSavedBeers(list : List<Beer>) {
+        this.savedBeers = list
+        notifyDataSetChanged()
+    }
+
 }
 
 class BeerHolder(val view : View) : RecyclerView.ViewHolder(view) {
     val imageView = view.imageView
     val name = view.beerName
+    val isSavedImage = view.isSavedImage
 }

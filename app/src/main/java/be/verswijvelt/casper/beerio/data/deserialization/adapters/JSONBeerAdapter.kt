@@ -17,6 +17,7 @@ class JSONBeerAdapter {
 
             val beer = Beer()
 
+            beer.id = beerJson.id
             beer.name = beerJson.name
             beer.description = beerJson.description
             beer.alcoholByVolume = beerJson.abv
