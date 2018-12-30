@@ -22,6 +22,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
 
     dataBinding {
         enabled = true
@@ -46,8 +49,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    implementation "android.arch.lifecycle:extensions:1.1.0"
-    implementation "android.arch.lifecycle:viewmodel:1.1.0"
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    implementation "android.arch.lifecycle:viewmodel:1.1.1"
 
     //Networking
     implementation 'com.github.kittinunf.fuel:fuel:1.16.0'
@@ -84,5 +87,7 @@ dependencies {
     //Debugging of database
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 
-}
+    //Image picker
+    implementation 'com.github.akshay2211:PixImagePicker:master-SNAPSHOT'
 
+}

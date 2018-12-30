@@ -60,5 +60,5 @@ class BeerAdapter(val navigationController: NavigationController) : Adapter<Beer
 class BeerHolder(val view : View) : RecyclerView.ViewHolder(view) {
     val imageView = view.imageView
     val name = view.beerName
-    val isSavedImage = view.isSavedImage
+    val isSavedImage = view.accesoryImage
 }

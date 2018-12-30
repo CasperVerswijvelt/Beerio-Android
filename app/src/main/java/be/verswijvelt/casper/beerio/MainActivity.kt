@@ -1,31 +1,32 @@
 package be.verswijvelt.casper.beerio
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
-import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.text.InputType
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONCategory
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONStyle
 import be.verswijvelt.casper.beerio.data.models.Beer
-import be.verswijvelt.casper.beerio.data.models.Note
 import be.verswijvelt.casper.beerio.data.room.BeerRoomDatabase
 import be.verswijvelt.casper.beerio.data.services.BeerRepository
 import be.verswijvelt.casper.beerio.data.services.IOnlineDataService
 import be.verswijvelt.casper.beerio.fragments.*
 import be.verswijvelt.casper.beerio.viewModels.MainActivityViewModel
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,13 +34,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.danlew.android.joda.JodaTimeAndroid
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import kotlin.coroutines.CoroutineContext
 
 
 class MainActivity : AppCompatActivity(), NavigationController {
 
 
-    private lateinit var repository : BeerRepository
+    private lateinit var repository: BeerRepository
     private var parentJob = Job()
     private val coroutineContext: CoroutineContext
         get() = parentJob + Dispatchers.Main
@@ -167,13 +170,18 @@ class MainActivity : AppCompatActivity(), NavigationController {
         ft.replace(R.id.fragment_container, fragment)
         ft.commit()
 
-        toolbar.title = fragment.fragmentTitle
+        updateToolbarTitle()
         showLoader(false)
 
         showBackButton(viewModel.currentBackStack().size > 1)
 
 
         invalidateOptionsMenu()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(data == null) return
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
 
@@ -242,7 +250,8 @@ class MainActivity : AppCompatActivity(), NavigationController {
     override fun showDialog(title: String, text: String?) {
 
         val builder = AlertDialog.Builder(this)
-        builder.setPositiveButton("Ty"
+        builder.setPositiveButton(
+            "Ty"
         ) { dialog, id ->
             // User clicked OK button
         }
@@ -256,7 +265,9 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
     }
 
-
+    override fun updateToolbarTitle() {
+        toolbar.title = viewModel.currentBackStack().peek().fragmentTitle
+    }
 
     override fun showCategory(category: JSONCategory) {
         pushFragments(
@@ -283,14 +294,78 @@ class MainActivity : AppCompatActivity(), NavigationController {
         pushFragments(viewModel.currentTab, ImageFragment.newInstance(url, toolbarTitle), true)
     }
 
+    override fun showAddBeerScreen() {
+        pushFragments(viewModel.currentTab, AddBeerFragment.newInstance(), true)
+    }
 
-    override fun deleteBeer(beerId: String) = scope.launch(Dispatchers.IO){
+    override fun showEditBeerScreen(beer: Beer) {
+        pushFragments(viewModel.currentTab, AddBeerFragment.newInstance(beer),true)
+    }
+
+    override fun exitCurrentFragment() {
+        popFragment()
+    }
+
+
+    override fun getBeerById(beerId: String): LiveData<Beer?> {
+        return repository.findById(beerId)
+    }
+
+    override fun deleteBeer(beerId: String) = scope.launch(Dispatchers.IO) {
         repository.delete(beerId)
     }
 
     override fun updateBeer(beer: Beer) = scope.launch(Dispatchers.IO) {
         repository.update(beer)
     }
+
+    override fun saveBeer(beer: Beer) = scope.launch(Dispatchers.IO) {
+        repository.insert(beer)
+    }
+
+
+    override fun saveBeerImageLocally(url: String, id: String) {
+        Log.d("BEERIODEBUG","saveBeerImageLocally $url $id")
+        val fileName = filesDir.path + "/" + id + ".png"
+        Picasso.get()
+            .load(url)
+            .resize(1000,1000)
+            .onlyScaleDown()
+            .centerCrop()
+            .into(object : Target {
+                override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
+                    Thread(Runnable {
+                        val file = File(fileName)
+                        try {
+                            file.createNewFile()
+                            val ostream = FileOutputStream(file,false)
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 80, ostream)
+                            ostream.flush()
+                            ostream.close()
+                            Picasso.get().invalidate("file://$fileName")
+                            Log.d("BEERIODEBUG","Wrote image to $fileName")
+                            runOnUiThread {
+                                (viewModel.currentBackStack().peek() as? BeerDetailsFragment)?.updateData()
+                            }
+                        } catch (e: IOException) {
+                            Log.e("IOException", e.localizedMessage)
+                        }
+                    }).start()
+                }
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d("BEERIODEBUG",e?.localizedMessage)
+                    e?.printStackTrace()
+                }
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+            })
+    }
+
+    override fun deleteImage(id: String) {
+        val fileName = filesDir.path + "/" + id + ".png"
+        File(fileName).delete()
+        Picasso.get().invalidate("file://$fileName")
+    }
+
 
     override fun getFilesDirectory(): File {
         return filesDir
@@ -304,15 +379,23 @@ interface NavigationController {
     fun showLoader(show: Boolean)
     fun showToast(text: String)
     fun showDialog(title: String, text: String?)
+    fun updateToolbarTitle()
 
     fun showCategory(category: JSONCategory)
     fun showBeers(style: JSONStyle)
     fun showBeer(beer: Beer)
     fun showImage(toolbarTitle: String, url: String)
+    fun showAddBeerScreen()
+    fun showEditBeerScreen(beer:Beer)
+    fun exitCurrentFragment()
 
-    fun deleteBeer(beerId:String) : Job
-    fun updateBeer(beer:Beer) : Job
+    fun getBeerById(beerId: String) : LiveData<Beer?>
+    fun deleteBeer(beerId: String): Job
+    fun updateBeer(beer: Beer): Job
+    fun saveBeer(beer: Beer): Job
+    fun saveBeerImageLocally(url: String, id: String)
+    fun deleteImage(url:String)
 
-    fun getFilesDirectory() : File
+    fun getFilesDirectory(): File
 
 }

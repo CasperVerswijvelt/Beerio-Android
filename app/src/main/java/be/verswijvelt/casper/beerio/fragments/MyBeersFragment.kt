@@ -72,5 +72,17 @@ class MyBeersFragment : BaseFragment() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
+    override fun onResume() {
+        super.onResume()
+        fab.setOnClickListener {
+            navigationController.showAddBeerScreen()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        fab.setOnClickListener(null)
+    }
+
 
 }

@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import be.verswijvelt.casper.beerio.NavigationController
 import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.data.models.Beer
-import kotlinx.android.synthetic.main.row_my_beer.view.*
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.row_beer.view.*
+import java.io.File
 
 class MyBeerAdapter(val navigationController: NavigationController) : Adapter<MyBeerHolder>(){
 
@@ -17,13 +19,26 @@ class MyBeerAdapter(val navigationController: NavigationController) : Adapter<My
 
     override fun onCreateViewHolder(parent: ViewGroup, p: Int): MyBeerHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val cellForRow = layoutInflater.inflate(R.layout.row_my_beer,parent,false)
+        val cellForRow = layoutInflater.inflate(R.layout.row_beer,parent,false)
         return MyBeerHolder(cellForRow)
     }
 
     override fun onBindViewHolder(holder: MyBeerHolder, position: Int) {
         val beer = beers[position]
         holder.name.text = beer.name
+        if(beer.iselfMade) {
+            holder.beerSourceImage.setImageDrawable(null)
+        } else
+            holder.beerSourceImage.setImageResource(R.drawable.globe)
+
+        val file = File(navigationController.getFilesDirectory().absolutePath +"/"+ beer.id +".png")
+        Picasso.get()
+            .load("file://"+file.absolutePath)
+            .placeholder(R.drawable.beer)
+            .error(R.drawable.beer)
+            .into(holder.imageView)
+
+
         holder.view.setOnClickListener {
             navigationController.showBeer(beer)
         }
@@ -46,5 +61,8 @@ class MyBeerAdapter(val navigationController: NavigationController) : Adapter<My
 }
 
 class MyBeerHolder(val view : View) : RecyclerView.ViewHolder(view) {
+    val imageView = view.imageView
     val name = view.beerName
+    val beerSourceImage = view.accesoryImage
+
 }

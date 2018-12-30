@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:minWidth="200dp"
+              android:orientation="vertical"
+              android:layout_height="match_parent">
+    <LinearLayout android:layout_width="match_parent"
+                  android:orientation="horizontal"
+                  android:background="@color/colorAccent"
+                  android:layout_height="wrap_content"
+                  android:gravity="center">
+        <TextView android:id="@+id/year_text"
+                  android:layout_margin="10dp"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textStyle="bold"
+                  android:textColor="@android:color/white"
+                  android:text="Beer year"/>
+    </LinearLayout>
+    <NumberPicker
+
+            android:id="@+id/yearpickerNumberPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+        <ImageButton
+                android:id="@+id/yearpickerCancelButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_close_black_24dp"
+                />
+
+        <ImageButton
+                android:id="@+id/yearPickerSetButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_check_black_24dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

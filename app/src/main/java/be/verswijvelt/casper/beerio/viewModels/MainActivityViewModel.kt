@@ -20,8 +20,6 @@ class MainActivityViewModel : ViewModel() {
 
         backStacks[AppConstants.TAB_MY_BEERS]!!.push(MyBeersFragment())
         backStacks[AppConstants.TAB_BROWSE_ONLINE]!!.push(CategoriesFragment())
-
-        Log.d("BEERIODEBUG","Mainactivityviewmodel created")
     }
 
 

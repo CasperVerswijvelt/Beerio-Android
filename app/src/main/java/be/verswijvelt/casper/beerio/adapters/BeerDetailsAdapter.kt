@@ -32,7 +32,7 @@ class BeerDetailsAdapter(private val navigationController: NavigationController)
         updateBeer()
     }
 
-    private fun updateBeer() {
+    fun updateBeer() {
 
         val file = File(navigationController.getFilesDirectory().absolutePath +"/"+ this.beer!!.id +".png")
         this.visualBeer = BeerDetailsVisualizer.getVisualRepresesntation(this.beer!!, this.savedBeer, if(file.exists()) "file://"+file.absolutePath else null)
@@ -76,7 +76,6 @@ class BeerDetailsAdapter(private val navigationController: NavigationController)
             }
         }
         holder.isDeletable = cell.isDeletable
-        Log.d("BEERIODEBUG","Biding viewholder for ${cell.key}, deletabel: ${holder.isDeletable}")
     }
 
     override fun getItemCount(): Int {
@@ -92,7 +91,6 @@ class BeerDetailsAdapter(private val navigationController: NavigationController)
         } else {
             notifyItemChanged(position)
         }
-
     }
 }
 
@@ -133,7 +131,7 @@ class BeerDetailsVisualizer {
             addCellIfExists(randomCells, "Is retired", beerToUse.isRetired, CellType.SIMPLE)
             addCellIfExists(randomCells, "Is organic", beerToUse.isOrganic, CellType.SIMPLE)
             addCellIfExists(randomCells, "Year", beerToUse.year, CellType.SIMPLE)
-            addCellIfExists(randomCells, "Bottle Label", overrideImageUrl?:beerToUse.labels?.large, CellType.IMAGE)
+            addCellIfExists(randomCells, "Bottle Label", overrideImageUrl?:beer.labels?.large, CellType.IMAGE)
             if(savedBeer != null) {
                 addCellIfExists(randomCells, "Saved on", beerToUse.dateSaved,CellType.SIMPLE)
             }
@@ -148,9 +146,11 @@ class BeerDetailsVisualizer {
             }
 
 
-            for(i in 0 until visualBeer.sections.size) {
+            for(i in visualBeer.sections.size - 1 downTo 0) {
                 if(visualBeer.sections[i].cells.isEmpty()) visualBeer.sections.removeAt(i)
             }
+
+
 
             addCellIfExists(visualBeer.sections.last().cells, "", "", CellType.HEADER)
 

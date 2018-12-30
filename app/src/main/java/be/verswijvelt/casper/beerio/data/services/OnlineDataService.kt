@@ -29,7 +29,6 @@ class OnlineDataService(var preferences : SharedPreferences? = null) : IOnlineDa
 
     override fun fetchCategories(completion: (List<JSONCategory>?) -> Unit) {
         val url = baseUrl + "categories"
-        Log.d("FETCHING","Fetching categories")
         url.httpGet(listOf(apiKeyParameter()))
             .responseString { _, _, result ->
                 when (result) {
@@ -61,7 +60,6 @@ class OnlineDataService(var preferences : SharedPreferences? = null) : IOnlineDa
 
     override fun fetchStyles(categoryId: Int, completion: (List<JSONStyle>?) -> Unit) {
         val url = baseUrl + "styles"
-        Log.d("FETCHING","Fetching styles")
         url.httpGet(listOf(apiKeyParameter()))
             .responseString { _, _, result ->
                 when (result) {
@@ -95,7 +93,6 @@ class OnlineDataService(var preferences : SharedPreferences? = null) : IOnlineDa
 
     override fun fetchBeers(styleId: Int, completion: (List<Beer>?) -> Unit) {
         val url = baseUrl + "beers"
-        Log.d("FETCHING","Fetching beers")
         url.httpGet(listOf(apiKeyParameter(), Pair("styleId",styleId)))
             .responseString { _, _, result ->
                 when (result) {
@@ -147,7 +144,6 @@ class OnlineDataService(var preferences : SharedPreferences? = null) : IOnlineDa
 
     //Helper methods
     private fun apiKeyParameter() : Pair<String,Any> {
-        Log.d("BEERIODEBUG", "api key is " + apiKey)
         return Pair("key",apiKey)
     }
 
