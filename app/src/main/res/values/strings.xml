@@ -1,9 +1,45 @@
 <resources>
     <string name="app_name">Beerio</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_beers_found_for_style">No beers could be found for this style</string>
+    <string name="internet_disconnected_or_apikey_invalid">Something went wrong while trying to load this data. Check if
+        you are connected to the internet and see if your API key is valid.
+    </string>
+    <string name="beer_name">Beer name</string>
+    <string name="beer_description">Beer description</string>
+    <string name="food_pairings">Food pairings</string>
+    <string name="original_gravity">Original gravity</string>
+    <string name="alcohol_by_volume">Alcohol by volume</string>
+    <string name="international_bittering_unit">International bittering unit</string>
+    <string name="serving_temperature">Serving temperature</string>
+    <string name="year">Year</string>
+    <string name="is_organic">Is organic</string>
+    <string name="is_retired">Is retired</string>
+    <string name="bottle_label">Bottle label</string>
+    <string name="show_image">Show image</string>
+    <string name="remove_image">Remove image</string>
+    <string name="select_image">Select image</string>
+    <string name="my_beers">My Beers</string>
+    <string name="browse_online">Browse Online</string>
+    <string name="save_beer_locally">Save beer locally</string>
+    <string name="delete_from_local_library">Delete from local library</string>
+    <string name="edit_beer">Edit this beer</string>
+    <string name="save_edited_created_beer">Save edited/created beer</string>
+    <string name="settings">Settings</string>
+    <string name="beer_icon_contentdescription">Icon image of a specific beer</string>
+    <string name="name_of_beer">Name of beer</string>
+    <string name="saved_indicator_contentdescription">Image indicating whether this beer has been saved or not</string>
+    <string name="key">Key</string>
+    <string name="show_image_arrow_contentdescription">Image of small arrow that if pressed shows the image of this
+        beer
+    </string>
+    <string name="value">Value</string>
+    <string name="categoryname_placeholder">CategoryName</string>
+    <string name="categorydescription_placeholder">CategoryDescription</string>
+    <string name="beername_placeholder">BeerName</string>
+    <string name="stylename_placeholder">StyleName</string>
+    <string name="header_placeholder">Header</string>
+    <string name="beer_year">Beer year</string>
+    <string name="cancel_yearpicker_contentdescription">Cancel button for year selection</string>
+    <string name="apply_yearpicker_contentdescription">Apply button for year selection</string>
+    <string name="no_styles_found_for_category">No styles could be found for this category</string>
 </resources>

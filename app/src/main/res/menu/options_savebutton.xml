@@ -5,6 +5,6 @@
             android:id="@+id/saveedit_beer"
             android:icon="@drawable/ic_check_black_24dp"
             app:showAsAction="always"
-            android:title="Save beer locally"/>
+            android:title="@string/save_edited_created_beer"/>
 
 </menu>

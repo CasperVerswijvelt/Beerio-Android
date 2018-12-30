@@ -4,12 +4,12 @@
     <item
             android:id="@+id/edit_beer"
             android:icon="@drawable/ic_edit_black_24dp"
-            app:showAsAction="always"
-            android:title="Delete from local library"/>
+            app:showAsAction="ifRoom"
+            android:title="@string/edit_beer"/>
     <item
             android:id="@+id/delete_beer"
             android:icon="@drawable/ic_delete_black_24dp"
-            app:showAsAction="always"
-            android:title="Delete from local library"/>
+            app:showAsAction="ifRoom"
+            android:title="@string/delete_from_local_library"/>
 
 </menu>

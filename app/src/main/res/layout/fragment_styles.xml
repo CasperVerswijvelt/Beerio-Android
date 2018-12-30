@@ -4,14 +4,13 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragments.StylesFragment">
+        tools:context=".ui.fragments.StylesFragment">
     <include layout="@layout/empty_dataset_placeholder"
              android:visibility="invisible"/>
     <include layout="@layout/error_placeholder"
              android:visibility="invisible"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

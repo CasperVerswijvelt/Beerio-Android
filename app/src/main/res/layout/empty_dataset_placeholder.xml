@@ -9,12 +9,12 @@
     <ImageView
             android:layout_height="100dp"
             android:layout_width="100dp"
-            android:id="@+id/imageView"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:src="@drawable/beer"
             android:layout_gravity="center"
-            android:tint="@color/grey"/>
+            android:tint="@color/grey"
+            android:contentDescription="@null"/>
 
     <TextView
 

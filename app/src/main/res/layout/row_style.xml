@@ -6,7 +6,7 @@
         android:layout_marginEnd="0dp"
         android:layout_marginStart="0dp"
         android:layout_marginTop="8dp"
-        android:id="@+id/row_category">
+>
 
     <LinearLayout
             android:orientation="vertical"
@@ -18,12 +18,12 @@
 
         <TextView
                 android:id="@+id/styleName"
-                android:text="StyleName"
+                android:text="@string/stylename_placeholder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textStyle="bold"
-                android:textSize="16dp"/>
+                android:textSize="16sp"/>
         <!--<TextView
                 android:text="StyleDescription"
                 android:id="@+id/styleDescription"

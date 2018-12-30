@@ -1,8 +1,8 @@
 package be.verswijvelt.casper.beerio.data.models
 
 import android.arch.persistence.room.*
-import be.verswijvelt.casper.beerio.converters.NoteListConverter
-import be.verswijvelt.casper.beerio.converters.TimeStampConverter
+import be.verswijvelt.casper.beerio.data.converters.NoteListConverter
+import be.verswijvelt.casper.beerio.data.converters.TimeStampConverter
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONLabels
 import org.joda.time.DateTime
 import java.io.Serializable

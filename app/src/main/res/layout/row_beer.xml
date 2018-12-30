@@ -6,7 +6,7 @@
         android:layout_marginEnd="0dp"
         android:layout_marginStart="0dp"
         android:layout_marginTop="8dp"
-        android:id="@+id/row_category">
+>
 
     <android.support.constraint.ConstraintLayout
             android:orientation="horizontal"
@@ -30,17 +30,18 @@
                 app:srcCompat="@mipmap/ic_launcher"
                 android:id="@+id/imageView"
                 android:scaleType="centerCrop"
-                android:adjustViewBounds="true"/>
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/beer_icon_contentdescription"/>
         <TextView
                 android:id="@+id/beerName"
-                android:text="BeerName"
+                android:text="@string/name_of_beer"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/imageView"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/accesoryImage"
+                app:layout_constraintEnd_toStartOf="@id/accessoryImage"
                 android:gravity="start|center_vertical"
                 android:textStyle="bold"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:layout_marginStart="10dp"
                 android:layout_height="0dp"
                 android:layout_width="0dp"/>
@@ -51,7 +52,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:id="@+id/accesoryImage"/>
+                android:id="@+id/accessoryImage"
+                android:contentDescription="@string/saved_indicator_contentdescription"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.card.MaterialCardView>

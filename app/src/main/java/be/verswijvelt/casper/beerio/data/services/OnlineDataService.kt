@@ -1,6 +1,5 @@
 package be.verswijvelt.casper.beerio.data.services
 
-import android.util.Log
 import be.verswijvelt.casper.beerio.data.deserialization.adapters.JSONBeerAdapter
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.*
 import be.verswijvelt.casper.beerio.data.models.Beer
@@ -13,19 +12,15 @@ import java.lang.Exception
 import android.content.SharedPreferences
 
 
-class OnlineDataService(var preferences : SharedPreferences? = null) : IOnlineDataService {
+class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDataService {
 
-    val baseUrl : String = "https://api.brewerydb.com/v2/"
+    private val baseUrl : String = "https://api.brewerydb.com/v2/"
 
     private val apiKey : String
         get() {
             if(preferences == null) return ""
-            return preferences!!.getString("apiKey","")!!
+            return preferences.getString("apiKey","")!!
         }
-
-    override fun setSharedPreferences(preferences: SharedPreferences) {
-        this.preferences =preferences
-    }
 
     override fun fetchCategories(completion: (List<JSONCategory>?) -> Unit) {
         val url = baseUrl + "categories"

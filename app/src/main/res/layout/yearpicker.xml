@@ -8,13 +8,13 @@
                   android:background="@color/colorAccent"
                   android:layout_height="wrap_content"
                   android:gravity="center">
-        <TextView android:id="@+id/year_text"
-                  android:layout_margin="10dp"
+        <TextView
+                android:layout_margin="10dp"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:textStyle="bold"
                   android:textColor="@android:color/white"
-                  android:text="Beer year"/>
+                  android:text="@string/beer_year"/>
     </LinearLayout>
     <NumberPicker
 
@@ -34,14 +34,15 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ic_close_black_24dp"
-                />
+                android:contentDescription="@string/cancel_yearpicker_contentdescription"/>
 
         <ImageButton
                 android:id="@+id/yearPickerSetButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_check_black_24dp"/>
+                android:src="@drawable/ic_check_black_24dp"
+                android:contentDescription="@string/apply_yearpicker_contentdescription"/>
 
     </LinearLayout>
 

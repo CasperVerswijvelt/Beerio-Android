@@ -4,8 +4,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragments.BeerDetailsFragment"
-        android:background="#ededed">
+        tools:context=".ui.fragments.BeerDetailsFragment"
+        android:background="#ededed" tools:ignore="Overdraw">
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -25,6 +25,6 @@
             android:clickable="true"
             android:backgroundTint="@color/colorAccent"
             android:elevation="10dp"
-            />
+            android:focusable="true" tools:targetApi="lollipop"/>
 
 </FrameLayout>
