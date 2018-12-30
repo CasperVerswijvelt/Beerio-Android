@@ -36,6 +36,7 @@ class ImageFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //Load the image with url in our viewmodel, and when loaded place it into our zoomable image view
         Picasso.get()
             .load(viewModel.url)
             .error(R.drawable.beer)

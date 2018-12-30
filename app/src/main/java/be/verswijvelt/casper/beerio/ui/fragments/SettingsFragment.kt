@@ -3,6 +3,7 @@ package be.verswijvelt.casper.beerio.ui.fragments
 import android.os.Bundle
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.support.v7.preference.Preference
+import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.ui.NavigationController
 import be.verswijvelt.casper.beerio.data.services.BeerRepository
 
@@ -15,15 +16,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //Find preference that should check if api key is valid when clicked, and set the click listener
 
-        val button = findPreference("checkApiKey")
-        button.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        val preference = findPreference("checkApiKey")
+        preference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             (activity as NavigationController).showLoader(true)
 
-
+            //check if api key is valid, and update the summary of this preference accordingly
             BeerRepository.getInstance().isApiKeyValid { isValid ->
                 activity?.runOnUiThread {
-                    button.summary = if(isValid)"This API key is valid" else "This API key is not valid"
+                    preference.summary = if(isValid)getString(R.string.api_key_valid) else getString(R.string.api_key_invalid)
                     (activity as NavigationController).showLoader(false)
                 }
             }

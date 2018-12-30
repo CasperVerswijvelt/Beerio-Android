@@ -15,6 +15,7 @@ class CategoriesViewModel : ViewModel() {
         loadData()
     }
 
+    //Loaddata function so we can later reload the data aswell (by swipe down to refresh)
     fun loadData() {
         BeerRepository.getInstance().fetchCategories {
             categories.postValue(it)

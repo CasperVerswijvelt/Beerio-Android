@@ -7,7 +7,7 @@ import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONLabels
 import org.joda.time.DateTime
 import java.io.Serializable
 
-
+//This is a class that represents a 'Beer' object that is used troughout the whole project. Also functions as a Room Entity with some Room annotations
 @Entity
 @TypeConverters(NoteListConverter::class,TimeStampConverter::class)
 class Beer : Serializable{

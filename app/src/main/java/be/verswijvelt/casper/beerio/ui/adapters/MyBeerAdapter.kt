@@ -26,19 +26,22 @@ class MyBeerAdapter(val navigationController: NavigationController) : Adapter<My
     override fun onBindViewHolder(holder: MyBeerHolder, position: Int) {
         val beer = beers[position]
         holder.name.text = beer.name
+        //If the beer is self created, show an accessory image of a globe (internet, duhh)
         if(beer.iselfMade) {
             holder.beerSourceImage.setImageDrawable(null)
         } else
             holder.beerSourceImage.setImageResource(R.drawable.globe)
 
+        //File that indicates where an image for this beer should be if it exists
         val file = File(navigationController.getFilesDirectory().absolutePath +"/"+ beer.id +".png")
+        //Load that image into the imageview, if it doesn't exist, picasso will show a placeholder image
         Picasso.get()
             .load("file://"+file.absolutePath)
             .placeholder(R.drawable.beer)
             .error(R.drawable.beer)
             .into(holder.imageView)
 
-
+        //Viewholder tapped listener
         holder.view.setOnClickListener {
             navigationController.showBeer(beer)
         }
@@ -54,6 +57,7 @@ class MyBeerAdapter(val navigationController: NavigationController) : Adapter<My
         notifyDataSetChanged()
     }
 
+    //Function called from fragment when a cell is swiped to delete on the recyclerview
     fun removeAt(position: Int) {
         BeerRepository.getInstance().delete(beers[position].id)
         notifyItemRemoved(position)

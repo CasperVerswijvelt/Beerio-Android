@@ -13,13 +13,13 @@ class BeersViewModel(private val styleId: Int, val styleName: String, val styleD
         loadData()
     }
 
+    //We hold in this viewmodel both our beers and savedBeers, so we can compare them and show which beers are already saved
     private val beers: MutableLiveData<List<Beer>> by lazy {
         MutableLiveData<List<Beer>>()
     }
-
     val savedBeers: LiveData<List<Beer>> = BeerRepository.getInstance().allSavedBeers
 
-
+    //Loaddata function so we can later reload the data aswell (by swipe down to refresh)
     fun loadData() {
         BeerRepository.getInstance().fetchBeers(styleId) {
             beers.postValue(it)
@@ -29,8 +29,6 @@ class BeersViewModel(private val styleId: Int, val styleName: String, val styleD
     fun getBeers(): LiveData<List<Beer>> {
         return beers
     }
-
-
 }
 
 

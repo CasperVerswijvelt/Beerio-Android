@@ -11,17 +11,21 @@ import com.squareup.moshi.Types
 import java.lang.Exception
 import android.content.SharedPreferences
 
-
+//This is an implementation class of our IOnlineDataService interface.
+// It handles all network calls to the BreweryDB API, to fulfill all data needs for the 'Browse Online' section of this application.
 class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDataService {
 
+    //base Url for our API
     private val baseUrl : String = "https://api.brewerydb.com/v2/"
 
+    //Api key, retrieved from our preferences object that is injected trough the constructor
     private val apiKey : String
         get() {
             if(preferences == null) return ""
             return preferences.getString("apiKey","")!!
         }
 
+    //Fetches all beer categories
     override fun fetchCategories(completion: (List<JSONCategory>?) -> Unit) {
         val url = baseUrl + "categories"
         url.httpGet(listOf(apiKeyParameter()))
@@ -53,6 +57,7 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
             }
     }
 
+    //Fetches all beer styles for a specific beer category
     override fun fetchStyles(categoryId: Int, completion: (List<JSONStyle>?) -> Unit) {
         val url = baseUrl + "styles"
         url.httpGet(listOf(apiKeyParameter()))
@@ -86,6 +91,7 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
             }
     }
 
+    //Fetches all beers for a specific beer style
     override fun fetchBeers(styleId: Int, completion: (List<Beer>?) -> Unit) {
         val url = baseUrl + "beers"
         url.httpGet(listOf(apiKeyParameter(), Pair("styleId",styleId)))
@@ -117,9 +123,9 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
     }
 
 
+    //Checks wether the api key from the preferences is a valid one
     override fun isApiKeyValid( completion: (Boolean) -> Unit) {
         val url = baseUrl + "beers"
-
         url.httpGet(listOf(apiKeyParameter()))
             .responseString { _, _, result ->
                 when (result) {
@@ -137,7 +143,7 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
 
 
 
-    //Helper methods
+    //Helper method for making a pair to use as query parameter in the url with the api key
     private fun apiKeyParameter() : Pair<String,Any> {
         return Pair("key",apiKey)
     }

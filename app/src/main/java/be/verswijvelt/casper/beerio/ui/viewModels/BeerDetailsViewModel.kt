@@ -3,10 +3,12 @@ package be.verswijvelt.casper.beerio.ui.viewModels
 import android.app.Application
 import android.arch.lifecycle.*
 import be.verswijvelt.casper.beerio.data.models.Beer
+import be.verswijvelt.casper.beerio.data.models.Note
 import be.verswijvelt.casper.beerio.data.services.BeerRepository
 
-class BeerDetailsViewModel(inBeer : Beer, application: Application) : AndroidViewModel(application) {
+class BeerDetailsViewModel(inBeer : Beer) : ViewModel() {
 
+    //We hold both a beer object and a savedBeer object, so we can know if the selected beer is saved or not
     private val beer: MutableLiveData<Beer> by lazy {
         MutableLiveData<Beer>()
     }
@@ -18,15 +20,25 @@ class BeerDetailsViewModel(inBeer : Beer, application: Application) : AndroidVie
     }
 
 
+    //Savebeer function that delegates it's work to the beer repository
     fun saveBeer()  {
         beer.value.let {
             BeerRepository.getInstance().insert(beer.value!!)
         }
     }
 
+    //Deletebeer function that delegates it's work to the beer repository
     fun deleteBeer() {
         beer.value.let {
             BeerRepository.getInstance().delete(beer.value!!.id)
+        }
+    }
+
+    //AddNoteToBeer function that adds a note to the savedBeer and delegate saving to beer repository
+    fun addNoteToBeer(note:String) {
+        savedBeer.value.let {
+            it!!.notes.add(Note(note.trim()))
+            BeerRepository.getInstance().update(it)
         }
     }
 
@@ -38,8 +50,8 @@ class BeerDetailsViewModel(inBeer : Beer, application: Application) : AndroidVie
 }
 
 
-class BeerDetailsViewModelFactory(private val beer: Beer, private val application: Application) :  ViewModelProvider.Factory {
+class BeerDetailsViewModelFactory(private val beer: Beer) :  ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return BeerDetailsViewModel(beer,application) as T
+        return BeerDetailsViewModel(beer) as T
     }
 }

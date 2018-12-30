@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import be.verswijvelt.casper.beerio.ui.NavigationController
 
-
-open abstract class BaseFragment : Fragment() {
+//BaseFragment class, is super class of all my fragments (except settings fragment) to minimize duplicate code in these fragments
+abstract class BaseFragment : Fragment() {
     var fragmentTitle : String =""
     protected lateinit var navigationController: NavigationController
 

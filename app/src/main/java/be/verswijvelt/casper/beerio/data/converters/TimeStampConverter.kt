@@ -4,8 +4,8 @@ import android.arch.persistence.room.TypeConverter
 import org.joda.time.DateTime
 import java.lang.Exception
 
+//This class handles the conversion from and to, date in string to an actual DateTime object, using the .parse and .toString methods on DateTime
 class TimeStampConverter {
-
     @TypeConverter
     fun fromTimestamp(value: String?): DateTime? {
         if (value != null) {
@@ -14,7 +14,6 @@ class TimeStampConverter {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
             return null
         } else {
             return null
@@ -29,7 +28,6 @@ class TimeStampConverter {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
             return null
         } else {
             return null

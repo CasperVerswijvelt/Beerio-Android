@@ -15,14 +15,15 @@ class MainActivityViewModel : ViewModel() {
     init {
         backStacks[AppConstants.TAB_MY_BEERS] = Stack()
         backStacks[AppConstants.TAB_BROWSE_ONLINE] = Stack()
-
-        backStacks[AppConstants.TAB_MY_BEERS]!!.push(MyBeersFragment())
-        backStacks[AppConstants.TAB_BROWSE_ONLINE]!!.push(CategoriesFragment())
     }
 
 
     fun currentBackStack(): Stack<BaseFragment> {
         return backStacks[currentTab]!!
+    }
+
+    fun currentFragment() : BaseFragment {
+        return backStacks[currentTab]!!.peek()
     }
 
     fun backStackForTag(tag: String): Stack<BaseFragment>? {

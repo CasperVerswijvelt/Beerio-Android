@@ -10,6 +10,10 @@ import org.jetbrains.anko.doAsync
 import org.joda.time.DateTime
 import java.lang.IllegalArgumentException
 
+//This class functions as a repository, a single point of access for all data needed within the Beerio application.
+// It retrieve's it's data from 2 kinds of sources: a beerDao and an onlineDataService.
+// Both can be injected into this object, and the Repository can be retrieved everywhere in the application by using the singleton pattern.
+// If dependencies are not injected before running methods on the singleton instance, a fitting exception is thrown.
 class BeerRepository {
 
     private var beerDao: BeerDao? = null
@@ -47,7 +51,7 @@ class BeerRepository {
     }
 
 
-    //Saved beers
+    //Room Database Beers
     val allSavedBeers: LiveData<List<Beer>> by lazy {
         checkBeerDaoNotNull()
         beerDao!!.getAllBeers()

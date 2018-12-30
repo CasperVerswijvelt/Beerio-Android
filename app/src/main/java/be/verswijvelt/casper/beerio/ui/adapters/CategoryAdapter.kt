@@ -10,6 +10,7 @@ import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONCategory
 import kotlinx.android.synthetic.main.row_category.view.*
 
+//This class is a pretty general adapter, should be pretty self explanatory
 class CategoryAdapter(val navigationController: NavigationController) : Adapter<CategoryHolder>(){
 
     private var categories : List<JSONCategory> = ArrayList()
@@ -24,6 +25,7 @@ class CategoryAdapter(val navigationController: NavigationController) : Adapter<
         val category = categories[position]
         holder.name.text = category.name
         holder.description.text = category.description
+        //If description is null, don't even show the textfield so it doesn't take up space
         holder.description.visibility = if (category.description == null ) View.GONE else View.VISIBLE
 
         holder.view.setOnClickListener {

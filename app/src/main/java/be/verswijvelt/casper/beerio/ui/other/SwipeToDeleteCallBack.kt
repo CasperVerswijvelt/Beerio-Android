@@ -1,16 +1,18 @@
-package be.verswijvelt.casper.beerio.ui.fragments
+package be.verswijvelt.casper.beerio.ui.other
 
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.ui.adapters.BeerDetailsViewHolder
 
-
-// https://medium.com/@kitek/recyclerview-swipe-to-delete-easier-than-you-thought-cff67ff5e5f6
+// This class enables the swiping to delete in a recyclerview
+// All credits go to this source:
+//      https://medium.com/@kitek/recyclerview-swipe-to-delete-easier-than-you-thought-cff67ff5e5f6
 abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
 
@@ -21,10 +23,6 @@ abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleC
     private val backgroundColor = Color.parseColor("#f44336")
     private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
-    init {
-        //deleteIcon.setTint(Color.WHITE)
-    }
-
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
         /**
@@ -33,10 +31,10 @@ abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleC
          * if (viewHolder?.itemViewType == YourAdapter.SOME_TYPE) return 0
          * if (viewHolder?.adapterPosition == 0) return 0
          */
-        if (viewHolder is BeerDetailsViewHolder) {
-            if(!viewHolder.isDeletable)
+
+        //Own addition: if the viewholder is a beerDetailsViewHolder, check if the isDeletable value is not true, then disable swiping
+        if (viewHolder is BeerDetailsViewHolder && !viewHolder.isDeletable)
                 return 0
-        }
 
         return super.getMovementFlags(recyclerView, viewHolder)
     }

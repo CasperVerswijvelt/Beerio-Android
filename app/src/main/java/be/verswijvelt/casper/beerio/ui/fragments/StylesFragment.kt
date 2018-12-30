@@ -48,10 +48,14 @@ class StylesFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //Set adapter and layoutmanager of our recyclerview
         recyclerView.adapter = StyleAdapter(navigationController)
+        recyclerView.layoutManager = LinearLayoutManager(this.context, LinearLayout.VERTICAL, false)
+        //Set customizable text of or no-data-placeholder
         noDataText.text = getString(R.string.no_styles_found_for_category)
         showLoader(true)
-        recyclerView.layoutManager = LinearLayoutManager(this.context, LinearLayout.VERTICAL, false)
+
+        //Observe our fetched styles, if given value is null, give empty list to adapter, else, give give list to adapter
         viewModel.getStyles().observe(this, Observer {
             if(it != null) {
                 (recyclerView.adapter as StyleAdapter).setStyles(it)
@@ -59,7 +63,10 @@ class StylesFragment : BaseFragment() {
                 (recyclerView.adapter as StyleAdapter).setStyles(listOf())
             }
 
+
+            //Set visibiltiy of empty dataset placeholder accoriding to given value being null and not empty, or not
             emptyDataSetPlaceHolder.visibility = if(it != null && it.isEmpty()) View.VISIBLE else View.GONE
+            //Set visibiltiy of error placeholder according to give value being null or not
             error_placeholder.visibility = if(it == null) View.VISIBLE else View.GONE
             showLoader(false)
             swipeRefresh.isRefreshing = false
@@ -68,6 +75,7 @@ class StylesFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        //Set swipe to refresh listener
         swipeRefresh.setOnRefreshListener {
             viewModel.loadData()
         }
@@ -75,14 +83,11 @@ class StylesFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
+        //Remove swipe to refresh listener
         swipeRefresh.setOnRefreshListener(null)
     }
 
     companion object {
-        /**
-         * The fragment argument representing the item ID that this fragment
-         * represents.
-         */
         const val ARG_CATEGORYID = "categoryId"
         const val ARG_CATEGORYNAME = "categoryName"
         const val ARG_CATEGORYDESCRIPTION = "categoryDescription"
@@ -94,13 +99,12 @@ class StylesFragment : BaseFragment() {
             args.putString(ARG_CATEGORYDESCRIPTION,categoryDescription)
             val fragment = StylesFragment()
             fragment.arguments = args
-
             fragment.fragmentTitle = categoryName
-
             return fragment
         }
     }
 
+    //override what should happen when title in toolbar is clicked when this fragment is shown
     override fun getTitleClickedHandler(): () -> Unit {
         return {
             navigationController.showDialog(viewModel.categoryName, viewModel.cateogryDescription)

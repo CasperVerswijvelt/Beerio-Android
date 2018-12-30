@@ -42,4 +42,22 @@
     <string name="cancel_yearpicker_contentdescription">Cancel button for year selection</string>
     <string name="apply_yearpicker_contentdescription">Apply button for year selection</string>
     <string name="no_styles_found_for_category">No styles could be found for this category</string>
+    <string name="fill_in_name">Fill in at least a name for your beer</string>
+    <string name="missing_information">Missing information</string>
+    <string name="delete_beer_confirmation">Are you sure you want to remove this beer from your local library? Doing
+        this will also remove all your notes for this beer.
+    </string>
+    <string name="delete_beer_dialogtitle">Delete beer</string>
+    <string name="add_note">Add note</string>
+    <string name="add">Add</string>
+    <string name="year_picker_title">Year picker</string>
+    <string name="selected_image_toolbartitle">Selected image</string>
+    <string name="add_new_beer_toolbartitle">Add new beer</string>
+    <string name="edit_beer_toolbartitle">Edit beer</string>
+    <string name="api_key_valid">This API key is valid</string>
+    <string name="api_key_invalid">This API key is not valid</string>
+    <string name="settings_toolbartitle">Settings</string>
+    <string name="my_beers_toolbartitle">My beers</string>
+    <string name="categories_toolbartitle">Beer categories</string>
+    <string name="bottle_label_prefix">Bottle label:</string>
 </resources>

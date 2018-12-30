@@ -8,12 +8,12 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener
+import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import be.verswijvelt.casper.beerio.R
@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
         ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
     }
 
+    //Listener for navigation item selected
     private val mOnNavigationItemSelectedListener = OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.tab_my_beers -> {
@@ -54,6 +55,8 @@ class MainActivity : AppCompatActivity(), NavigationController {
         showFragmentForCurrentTab()
         return@OnNavigationItemSelectedListener true
     }
+
+    //Listener for navigation item reselected
     private val mOnNavigationItemReselectedListener = BottomNavigationView.OnNavigationItemReselectedListener {
         if (viewModel.currentBackStack().size != 1) {
             while (viewModel.currentBackStack().size != 1) {
@@ -69,6 +72,14 @@ class MainActivity : AppCompatActivity(), NavigationController {
         super.onCreate(savedInstanceState)
         JodaTimeAndroid.init(this)
 
+        //Setting initial pages in the viewmodel
+        val myBeersFragment = MyBeersFragment()
+        myBeersFragment.fragmentTitle = getString(R.string.my_beers_toolbartitle)
+        val categoriesFragment = CategoriesFragment()
+        categoriesFragment.fragmentTitle = getString(R.string.categories_toolbartitle)
+        viewModel.backStackForTag(AppConstants.TAB_MY_BEERS)?.push(myBeersFragment)
+        viewModel.backStackForTag(AppConstants.TAB_BROWSE_ONLINE)?.push(categoriesFragment)
+
         //Dependency injection
         BeerRepository.getInstance().setBeerDao(BeerRoomDatabase.getDatabase(application).beerDao())
         BeerRepository.getInstance().setOnlineDataService(OnlineDataService(PreferenceManager.getDefaultSharedPreferences(this)))
@@ -83,14 +94,15 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
     override fun onResume() {
         super.onResume()
-        viewModel.currentTab =
-                if (navigation.selectedItemId == R.id.tab_my_beers) AppConstants.TAB_MY_BEERS else AppConstants.TAB_BROWSE_ONLINE
+        //Set currenttab in viewmodel according to selected item in navigation bar
+        viewModel.currentTab = if (navigation.selectedItemId == R.id.tab_my_beers) AppConstants.TAB_MY_BEERS else AppConstants.TAB_BROWSE_ONLINE
         showFragmentForCurrentTab()
 
+        //Setting listeners for navigation item selected, reselected, and toolbar title clicked
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         navigation.setOnNavigationItemReselectedListener(mOnNavigationItemReselectedListener)
-
         setToolbarTitleClickListener {
+            //Run title clicked handler for the current displayed fragment
             viewModel.currentBackStack().peek().getTitleClickedHandler().invoke()
         }
 
@@ -100,6 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
     override fun onPause() {
         super.onPause()
 
+        //Remove all listeners
         navigation.setOnNavigationItemSelectedListener(null)
         navigation.setOnNavigationItemReselectedListener(null)
         removeToolbarTitleClickListener()
@@ -107,30 +120,26 @@ class MainActivity : AppCompatActivity(), NavigationController {
     }
 
 
+    //when options item is selected, open settings fragment if settings was tapped
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+        return when (item?.itemId) {
             R.id.settingsButton -> {
-                val manager = supportFragmentManager
-                val ft = manager.beginTransaction()
-                ft.setCustomAnimations(
-                    R.anim.fade_in,
-                    R.anim.fade_out
-                )
-                ft.replace(R.id.fragment_container, SettingsFragment())
-                ft.commit()
+                //Switch to settigns fragment without putting it on our backstack, since it couldn't inherit of BaseFragment
+                switchFragment(SettingsFragment(),R.anim.fade_in,R.anim.fade_out)
 
-                toolbar.title = "Settings"
-
+                toolbar.title = getString(R.string.settings_toolbartitle)
                 showBackButton(true)
-
                 showLoader(false)
 
-                return true
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
             }
         }
-        return super.onOptionsItemSelected(item)
     }
 
+    //Checks which fragment should currently be show according to our viewModel, and show it
     private fun showFragmentForCurrentTab() {
         switchFragment(viewModel.currentBackStack().peek(),
             R.anim.fade_in,
@@ -139,6 +148,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
     }
 
 
+    //Push a fragment on our custom backstack for a specific tag  (one of either tabs)
     private fun pushFragments(tag: String, fragment: BaseFragment, shouldAnimate: Boolean) {
         viewModel.backStackForTag(tag)?.push(fragment)
         if (shouldAnimate) {
@@ -151,71 +161,85 @@ class MainActivity : AppCompatActivity(), NavigationController {
         }
     }
 
-
+    //Pop the currently shown fragment from the backstack for the tab that it is on
     private fun popFragment() {
-        val fragment = viewModel.currentBackStack().elementAt(viewModel.currentBackStack().size - 2)
         viewModel.currentBackStack().pop()
-        switchFragment(fragment, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+        switchFragment(viewModel.currentBackStack().peek(), android.R.anim.slide_in_left, android.R.anim.slide_out_right)
     }
 
 
-    private fun switchFragment(fragment: BaseFragment, enterAnimation: Int? = null, exitAnimation: Int? = null) {
+    //Handle the switching of displayed fragment, contained in a single method
+    private fun switchFragment(fragment: Fragment, enterAnimation: Int? = null, exitAnimation: Int? = null) {
         val manager = supportFragmentManager
         val ft = manager.beginTransaction()
         if (enterAnimation != null && exitAnimation != null) ft.setCustomAnimations(enterAnimation, exitAnimation)
         ft.replace(R.id.fragment_container, fragment)
         ft.commit()
 
+        //Update toolbar title according to current shown fragment
         updateToolbarTitle()
         showLoader(false)
 
+        //Only show back button if there are more than 1 fragment on the current backstack
         showBackButton(viewModel.currentBackStack().size > 1)
 
-
+        //Invalidate options menu so it shows again
         invalidateOptionsMenu()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        //Stop this method from running in fragments if the data is null, needed for our image picker that kept crashing because data was null
+        // See my reply at https://github.com/esafirm/android-image-picker/issues/186#issuecomment-450508790
+        // for more detailed description of the problem
         if(data == null) return
         super.onActivityResult(requestCode, resultCode, data)
     }
 
 
+    //Override the onbackpressed method and adjust implementation according to our own custom backstack
     override fun onBackPressed() {
-        if (fragment_container.getChildAt(0) is LinearLayout) {
+        //If the fragment that should be currently visible is not resumed, it means that our settigns fragment is show.
+        // Continue by just showing the fragment for current tab without poping anything from the backstack
+        if (!viewModel.currentBackStack().peek().isResumed) {
             showFragmentForCurrentTab()
             return
         }
-
+        //If the size of the current backstack is 1 and the selected tab is not MY_BEERS, then switch to MY_BEERS tab and show current fragment
         if (viewModel.currentBackStack().size == 1 && viewModel.currentTab != AppConstants.TAB_MY_BEERS) {
             navigation.selectedItemId = R.id.tab_my_beers
             viewModel.currentTab = AppConstants.TAB_MY_BEERS
             showFragmentForCurrentTab()
             return
-        } else if (viewModel.currentBackStack().size == 1) {
+        } //Else; if the backstack is size 1, still, it mans that the selected tab is MY_BEERS, we close the app at this point
+        else if (viewModel.currentBackStack().size == 1) {
             finish()
             return
         }
 
-        (viewModel.currentBackStack().lastElement() as BaseFragment).onBackPressed()
-
+        //Run onbackpressed in the fragment we are about to pop from the backstack, so they can react to it.
+        (viewModel.currentBackStack().lastElement()).onBackPressed()
         popFragment()
     }
 
-    private fun showBackButton(bool: Boolean) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(bool)
-        supportActionBar?.setDisplayShowHomeEnabled(bool)
-    }
+
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
     }
 
+    //Helper method that sets the back button to show or not show
+    private fun showBackButton(bool: Boolean) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(bool)
+        supportActionBar?.setDisplayShowHomeEnabled(bool)
+    }
+
+    //Helper method to set the toolbar title clicked listener to run a specific lambda when tapped
     private fun setToolbarTitleClickListener(handler: () -> Unit) {
         if (toolbar == null)
             return
 
+        //Find the child of toolbar that is a textview and apply click listener
         for (i in 0..toolbar.childCount) {
             if (toolbar.getChildAt(i) is TextView) {
                 (toolbar.getChildAt(i) as TextView).setOnClickListener {
@@ -225,7 +249,9 @@ class MainActivity : AppCompatActivity(), NavigationController {
         }
     }
 
+    //Helper method to remove toolbar title clicked listener
     private fun removeToolbarTitleClickListener() {
+        //Find the child of toolbar that is a textview and remove click listener
         for (i in 0..toolbar.childCount) {
             if (toolbar.getChildAt(i) is TextView) {
                 (toolbar.getChildAt(i) as TextView).setOnClickListener(null)
@@ -244,21 +270,12 @@ class MainActivity : AppCompatActivity(), NavigationController {
     }
 
     override fun showDialog(title: String, text: String?) {
-
         val builder = AlertDialog.Builder(this)
-        builder.setPositiveButton(
-            "Ty"
-        ) { dialog, id ->
-            // User clicked OK button
-        }
+        builder.setPositiveButton(android.R.string.ok,null)
         builder.setTitle(title)
         builder.setMessage(text)
-
-        // Create the AlertDialog
         val alertDialog: AlertDialog? = builder.create()
-
         alertDialog?.show()
-
     }
 
     override fun updateToolbarTitle() {
@@ -271,7 +288,6 @@ class MainActivity : AppCompatActivity(), NavigationController {
             StylesFragment.newInstance(category.id, category.name, category.description),
             true
         )
-
     }
 
     override fun showBeers(style: JSONStyle) {
@@ -291,11 +307,15 @@ class MainActivity : AppCompatActivity(), NavigationController {
     }
 
     override fun showAddBeerScreen() {
-        pushFragments(viewModel.currentTab, AddBeerFragment.newInstance(), true)
+        val fragment = AddBeerFragment.newInstance()
+        fragment.fragmentTitle = getString(R.string.add_new_beer_toolbartitle)
+        pushFragments(viewModel.currentTab,fragment , true)
     }
 
     override fun showEditBeerScreen(beer: Beer) {
-        pushFragments(viewModel.currentTab, AddBeerFragment.newInstance(beer),true)
+        val fragment = AddBeerFragment.newInstance(beer)
+        fragment.fragmentTitle = getString(R.string.edit_beer_toolbartitle)
+        pushFragments(viewModel.currentTab,fragment ,true)
     }
 
     override fun exitCurrentFragment() {
@@ -304,8 +324,9 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
 
 
+    //Method that saves a beer image locally in the right location in files Directory in this app.
+    // Placed this method in the navigationController because otherwise it would be alot of duplicate code to do it in the other places it was needed
     override fun saveBeerImageLocally(url: String, id: String) {
-        Log.d("BEERIODEBUG","saveBeerImageLocally $url $id")
         val fileName = filesDir.path + "/" + id + ".png"
         Picasso.get()
             .load(url)
@@ -323,8 +344,8 @@ class MainActivity : AppCompatActivity(), NavigationController {
                             ostream.flush()
                             ostream.close()
                             Picasso.get().invalidate("file://$fileName")
-                            Log.d("BEERIODEBUG","Wrote image to $fileName")
                             runOnUiThread {
+                                //Update the beer details fragment to show that the beer has a bottle label available to show, after the image has been saved
                                 (viewModel.currentBackStack().peek() as? BeerDetailsFragment)?.updateData()
                             }
                         } catch (e: IOException) {
@@ -333,13 +354,13 @@ class MainActivity : AppCompatActivity(), NavigationController {
                     }).start()
                 }
                 override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    Log.d("BEERIODEBUG",e?.localizedMessage)
                     e?.printStackTrace()
                 }
                 override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
             })
     }
 
+    //Remove a beer image from the right location according to beer id
     override fun deleteImage(id: String) {
         val fileName = filesDir.path + "/" + id + ".png"
         File(fileName).delete()
@@ -347,6 +368,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
     }
 
 
+    //Method available to return the filesDir of this context,usefull for other fragments that want to know if a specific file exists in this directory
     override fun getFilesDirectory(): File {
         return filesDir
     }

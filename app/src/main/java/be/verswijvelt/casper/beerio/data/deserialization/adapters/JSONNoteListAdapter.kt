@@ -7,6 +7,7 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
 import org.joda.time.DateTime
 
+//This class is used by moshi to convert a JSONNoteList object to my actual domain objects, and vice versa
 class JSONNoteListAdapter {
     @ToJson
     fun notesToJson(list: ArrayList<Note>) : JSONNoteList  {

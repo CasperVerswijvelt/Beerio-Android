@@ -10,6 +10,7 @@ import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONStyle
 import kotlinx.android.synthetic.main.row_style.view.*
 
+//General adapter, should be pretty self explanatory
 class StyleAdapter(val navigationController: NavigationController) : Adapter<StyleHolder>(){
 
     private var styles : List<JSONStyle> = ArrayList()
@@ -23,8 +24,6 @@ class StyleAdapter(val navigationController: NavigationController) : Adapter<Sty
     override fun onBindViewHolder(holder: StyleHolder, position: Int) {
         val style = styles[position]
         holder.name.text = style.name
-        //holder.description.text = style.description
-        //holder.description.visibility = if (style.description == null ) View.GONE else View.VISIBLE
 
         holder.view.setOnClickListener {
             navigationController.showBeers(style)

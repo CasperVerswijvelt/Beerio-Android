@@ -14,11 +14,6 @@ import kotlinx.android.synthetic.main.error_placeholder.*
 
 
 class CategoriesFragment : BaseFragment() {
-
-    init {
-        super.fragmentTitle = "Beer categories"
-    }
-
     private val viewModel by lazy {
         ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
     }
@@ -34,15 +29,19 @@ class CategoriesFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //Set adapter and layoutmanager for our recyclerview
         recyclerView.adapter = CategoryAdapter(navigationController)
         recyclerView.layoutManager = LinearLayoutManager(this.context, LinearLayout.VERTICAL, false)
         showLoader(true)
+
+        //Observe fetched categories and if value changes and it is null, give empty list to adapter, else, give the given list to the adapter
         viewModel.getCategories().observe(this, Observer {
             if(it != null) {
                 (recyclerView.adapter as CategoryAdapter).setCategories(it)
             } else {
                 (recyclerView.adapter as CategoryAdapter).setCategories(listOf())
             }
+            //Show error placeholder if updated value is null
             error_placeholder.visibility = if(it == null) View.VISIBLE else View.GONE
             showLoader(false)
             swipeRefresh.isRefreshing = false
@@ -51,6 +50,7 @@ class CategoriesFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        //Set swipe to refresh listener
         swipeRefresh.setOnRefreshListener {
             viewModel.loadData()
         }
@@ -58,11 +58,13 @@ class CategoriesFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
+        //remove swipe to refresh listener
         swipeRefresh.setOnRefreshListener(null)
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        //Inflate the right menu (settings button)
         inflater?.inflate(be.verswijvelt.casper.beerio.R.menu.options_settings, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }

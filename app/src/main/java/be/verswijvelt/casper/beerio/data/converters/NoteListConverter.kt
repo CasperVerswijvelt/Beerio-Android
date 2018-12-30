@@ -9,6 +9,7 @@ import com.squareup.moshi.Types
 
 
 
+//This class handles the conversion to and from, json in string format to an ArrayList of Notes, using a Moshi adapter
 class NoteListConverter {
     @TypeConverter
     fun jsonNotesToList(json : String): ArrayList<Note> ?  {

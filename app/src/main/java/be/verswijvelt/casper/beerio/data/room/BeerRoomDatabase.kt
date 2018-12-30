@@ -7,6 +7,8 @@ import android.content.Context
 import be.verswijvelt.casper.beerio.data.models.Beer
 
 
+//This abstract class is used as our databse object for our Room Beer Database. It contains a static method that returns an instance of itself according to the
+// given context
 @Database(entities = [Beer::class], version = 9)
 abstract  class BeerRoomDatabase : RoomDatabase() {
     companion object {

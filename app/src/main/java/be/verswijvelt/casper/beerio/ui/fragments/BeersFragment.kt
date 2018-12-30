@@ -45,23 +45,29 @@ class BeersFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //Set adapter and layoutmanager for recyclerview
         recyclerView.adapter = BeerAdapter(navigationController)
         recyclerView.layoutManager = LinearLayoutManager(this.context, LinearLayout.VERTICAL, false)
+        //Set customizable text of our no-data-placeholder
         noDataText.text = getString(R.string.no_beers_found_for_style)
         showLoader(true)
+        //Observe our beers , if we get a list as answer give it to the adapter, if our answer is null give empty list to adapter
         viewModel.getBeers().observe(this, Observer {
-
             if(it != null) {
                 (recyclerView.adapter as BeerAdapter).setBeers(it)
             } else {
                 (recyclerView.adapter as BeerAdapter).setBeers(listOf())
             }
 
+            //Show empty data set placeholder if received value is not null but is empty
             emptyDataSetPlaceHolder.visibility = if(it != null && it.isEmpty()) View.VISIBLE else View.GONE
+            //show error placeholder if value is null
             error_placeholder.visibility = if(it == null) View.VISIBLE else View.GONE
             showLoader(false)
             swipeRefresh.isRefreshing = false
         })
+        //Observe savedbeers and if we get a new value we inform our recyclerview adapter
         viewModel.savedBeers.observe(this, Observer {
             if(it != null) {
                 (recyclerView.adapter as BeerAdapter).setSavedBeers(it)
@@ -71,6 +77,7 @@ class BeersFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        //Set swipe to refresh listener
         swipeRefresh.setOnRefreshListener {
             viewModel.loadData()
         }
@@ -78,15 +85,12 @@ class BeersFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
+        //remove swipe to refresh listener
         swipeRefresh.setOnRefreshListener(null)
     }
 
 
     companion object {
-        /**
-         * The fragment argument representing the item ID that this fragment
-         * represents.
-         */
         const val ARG_STYLEID = "categoryId"
         const val ARG_STYLENAME = "styleName"
         const val ARG_STYLEDESCRIPTION = "styleDescription"
@@ -105,6 +109,7 @@ class BeersFragment : BaseFragment() {
         }
     }
 
+    //override what should happen when title in toolbar is clicked when this fragment is shown
     override fun getTitleClickedHandler(): () -> Unit {
         return {
             navigationController.showDialog(viewModel.styleName, viewModel.styleDescription)

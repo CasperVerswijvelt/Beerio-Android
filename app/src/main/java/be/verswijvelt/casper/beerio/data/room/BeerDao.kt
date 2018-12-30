@@ -4,6 +4,9 @@ import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import be.verswijvelt.casper.beerio.data.models.Beer
 
+//This interface acts as a Data Access Object for our Beer database, and defines the methods that can be executed to our database.
+// These include the standard insert, detel and update queries, but also custom SQL queries such as getAllBeers, findById and deleteById
+
 @Dao
 interface BeerDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)

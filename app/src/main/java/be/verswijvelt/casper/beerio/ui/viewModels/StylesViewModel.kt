@@ -18,6 +18,7 @@ class StylesViewModel(private val categoryId : Int, val categoryName:String, val
         loadData()
     }
 
+    //Loaddata function so we can later reload the data aswell (by swipe down to refresh)
     fun loadData() {
         BeerRepository.getInstance().fetchStyles(categoryId) {
             styles.postValue(it)
