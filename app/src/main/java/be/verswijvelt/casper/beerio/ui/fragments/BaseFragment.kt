@@ -18,15 +18,9 @@ abstract class BaseFragment : Fragment() {
 
     fun onBackPressed() {}
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {}
 
     fun showLoader(show:Boolean) {
         navigationController.showLoader(show)
-    }
-
-    open fun getTitleClickedHandler() : (() -> Unit) {
-        return {
-        }
     }
 }

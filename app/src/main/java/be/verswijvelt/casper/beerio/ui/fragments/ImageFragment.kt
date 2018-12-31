@@ -1,16 +1,19 @@
 package be.verswijvelt.casper.beerio.ui.fragments
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 
 import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.ui.viewModels.ImageViewModel
 import be.verswijvelt.casper.beerio.ui.viewModels.ImageViewModelFactory
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_image.*
+
+
 
 class ImageFragment : BaseFragment() {
     private var url = ""
@@ -41,6 +44,28 @@ class ImageFragment : BaseFragment() {
             .load(viewModel.url)
             .error(R.drawable.beer)
             .into(photo_view)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        //Inflate the right menu (info button)
+        inflater?.inflate(be.verswijvelt.casper.beerio.R.menu.options_imageoptions, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when(item?.itemId) {
+            R.id.copy_imageurl -> {
+                val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                val clip = ClipData.newPlainText("Image url", viewModel.url)
+                clipboard!!.primaryClip = clip
+
+                navigationController.notify("Image URL copied to clipboard")
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     companion object {

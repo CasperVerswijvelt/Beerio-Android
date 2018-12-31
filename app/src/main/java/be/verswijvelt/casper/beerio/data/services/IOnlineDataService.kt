@@ -4,7 +4,7 @@ import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONCategory
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONStyle
 import be.verswijvelt.casper.beerio.data.models.Beer
 
-//This is an interface that defines the method that an implementation should offer, for the browse online section of this application
+//This is an interface that defines the method that an implementation should offer, for the browse online row_beerdetails_header of this application
 interface IOnlineDataService{
 
     fun fetchCategories(completion : (List<JSONCategory>?) -> Unit)

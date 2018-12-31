@@ -4,9 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
 import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.ui.adapters.BeerAdapter
@@ -89,6 +87,24 @@ class BeersFragment : BaseFragment() {
         swipeRefresh.setOnRefreshListener(null)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        //Inflate the right menu (info button)
+        inflater?.inflate(be.verswijvelt.casper.beerio.R.menu.options_info, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when(item?.itemId) {
+            R.id.infoButton -> {
+                navigationController.showDialog(viewModel.styleName, viewModel.styleDescription)
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
 
     companion object {
         const val ARG_STYLEID = "categoryId"
@@ -108,12 +124,4 @@ class BeersFragment : BaseFragment() {
             return fragment
         }
     }
-
-    //override what should happen when title in toolbar is clicked when this fragment is shown
-    override fun getTitleClickedHandler(): () -> Unit {
-        return {
-            navigationController.showDialog(viewModel.styleName, viewModel.styleDescription)
-        }
-    }
-
 }

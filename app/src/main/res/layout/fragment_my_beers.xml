@@ -5,6 +5,9 @@
              android:layout_height="match_parent"
              tools:context=".ui.fragments.MyBeersFragment">
 
+    <include layout="@layout/empty_dataset_placeholder"
+             android:visibility="invisible"/>
+
     <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"

@@ -1,5 +1,7 @@
 package be.verswijvelt.casper.beerio.ui.adapters
 
+import android.app.Activity
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +12,6 @@ import be.verswijvelt.casper.beerio.ui.NavigationController
 import be.verswijvelt.casper.beerio.data.models.Beer
 import be.verswijvelt.casper.beerio.data.services.BeerRepository
 import kotlinx.android.synthetic.main.row_beerdetails_simple.view.*
-import org.jetbrains.anko.Android
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.io.File
@@ -39,7 +40,10 @@ class BeerDetailsAdapter(private val navigationController: NavigationController)
     fun updateBeer() {
         val file = File(navigationController.getFilesDirectory().absolutePath +"/"+ this.beer!!.id +".png")
         //Generates the visual representation of the beer, with - if a local file for the image exists - a path to that image
-        this.visualBeer = BeerDetailsVisualizer.getVisualRepresesntation(this.beer!!, this.savedBeer, if(file.exists()) "file://"+file.absolutePath else null)
+        this.visualBeer = BeerDetailsVisualizer.getVisualRepresesntation(this.beer!!
+            , this.savedBeer
+            , if(file.exists()) "file://"+file.absolutePath else null
+            ,(navigationController as Activity).applicationContext)
         this.notifyDataSetChanged()
     }
 
@@ -52,18 +56,20 @@ class BeerDetailsAdapter(private val navigationController: NavigationController)
             BeerDetailsVisualizer.CellType.SIMPLE -> 1
             BeerDetailsVisualizer.CellType.LARGE -> 2
             BeerDetailsVisualizer.CellType.IMAGE -> 3
+            BeerDetailsVisualizer.CellType.FOOTER -> 4
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BeerDetailsViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val cellForRow: View
-        //Load the right xml layout accoriding to the given itemViewType, as seen in in previous method
+        //Load the right xml layout according to the given itemViewType, as seen in in previous method
         cellForRow = when (viewType) {
-            0 -> layoutInflater.inflate(be.verswijvelt.casper.beerio.R.layout.section, parent, false)
+            0 -> layoutInflater.inflate(be.verswijvelt.casper.beerio.R.layout.row_beerdetails_header, parent, false)
             1 -> layoutInflater.inflate(be.verswijvelt.casper.beerio.R.layout.row_beerdetails_simple, parent, false)
             2 -> layoutInflater.inflate(be.verswijvelt.casper.beerio.R.layout.row_beerdetails_subtitle, parent, false)
             3 -> layoutInflater.inflate(be.verswijvelt.casper.beerio.R.layout.row_beerdetails_image, parent, false)
+            4 -> layoutInflater.inflate(be.verswijvelt.casper.beerio.R.layout.row_beerdetails_footer, parent, false)
             else -> {
                 layoutInflater.inflate(be.verswijvelt.casper.beerio.R.layout.row_beerdetails_simple, parent, false)
             }
@@ -112,40 +118,35 @@ class BeerDetailsViewHolder(view: View, var isDeletable: Boolean=false) : Recycl
 //Class that handles visualisation of a beer object by partitioning it in sections and cells of the right type
 class BeerDetailsVisualizer {
     companion object {
-        fun getVisualRepresesntation(beer: Beer, savedBeer: Beer?, overrideImageUrl: String? = null): VisualBeer {
+        fun getVisualRepresesntation(beer: Beer, savedBeer: Beer?, overrideImageUrl: String? = null, context:Context): VisualBeer {
             val visualBeer = VisualBeer()
             val beerToUse = savedBeer?:beer
 
             //Section: Basic info
             val basicInfoCells: ArrayList<VisualBeerCell> = ArrayList()
-            addCellIfExists(basicInfoCells, "Name", beerToUse.name, CellType.LARGE)
-            addCellIfExists(basicInfoCells, "Description", beerToUse.description, CellType.LARGE)
-            visualBeer.sections.add(VisualBeerSection("Basic Info", basicInfoCells))
+            addCellIfExists(basicInfoCells, context.getString(R.string.name), beerToUse.name, CellType.LARGE)
+            addCellIfExists(basicInfoCells, context.getString(R.string.description), beerToUse.description, CellType.LARGE)
+            visualBeer.sections.add(VisualBeerSection(context.getString(R.string.basic_info), basicInfoCells))
 
             //Section: Numbers and stuff
             val numbersCells: ArrayList<VisualBeerCell> = ArrayList()
-            addCellIfExists(numbersCells, "Original Gravity", beerToUse.originalGravity, CellType.SIMPLE)
-            addCellIfExists(numbersCells, "Alcohol By Volume", beerToUse.alcoholByVolume, CellType.SIMPLE)
-            addCellIfExists(
-                numbersCells,
-                "International Bittering Unit",
-                beer.internationalBitteringUnit,
-                CellType.SIMPLE
-            )
-            addCellIfExists(numbersCells, "Serving temperature", beerToUse.servingTemperature, CellType.LARGE)
-            visualBeer.sections.add(VisualBeerSection("Numbers and stuff", numbersCells))
+            addCellIfExists(numbersCells, context.getString(R.string.original_gravity), beerToUse.originalGravity, CellType.SIMPLE)
+            addCellIfExists(numbersCells, context.getString(R.string.alcohol_by_volume), beerToUse.alcoholByVolume, CellType.SIMPLE)
+            addCellIfExists(numbersCells, context.getString(R.string.international_bittering_unit), beer.internationalBitteringUnit, CellType.SIMPLE)
+            addCellIfExists(numbersCells, context.getString(R.string.serving_temperature), beerToUse.servingTemperature, CellType.LARGE)
+            visualBeer.sections.add(VisualBeerSection(context.getString(R.string.numbers_and_stuff), numbersCells))
 
             //Section: Random stuff
             val randomCells: ArrayList<VisualBeerCell> = ArrayList()
-            addCellIfExists(randomCells, "Food Pairings", beerToUse.foodPairings, CellType.LARGE)
-            addCellIfExists(randomCells, "Is retired", beerToUse.isRetired, CellType.SIMPLE)
-            addCellIfExists(randomCells, "Is organic", beerToUse.isOrganic, CellType.SIMPLE)
-            addCellIfExists(randomCells, "Year", beerToUse.year, CellType.SIMPLE)
-            addCellIfExists(randomCells, "Bottle Label", overrideImageUrl?:beer.labels?.large, CellType.IMAGE)
+            addCellIfExists(randomCells, context.getString(R.string.food_pairings), beerToUse.foodPairings, CellType.LARGE)
+            addCellIfExists(randomCells, context.getString(R.string.is_retired), beerToUse.isRetired, CellType.SIMPLE)
+            addCellIfExists(randomCells, context.getString(R.string.is_organic), beerToUse.isOrganic, CellType.SIMPLE)
+            addCellIfExists(randomCells, context.getString(R.string.year), beerToUse.year, CellType.SIMPLE)
+            addCellIfExists(randomCells, context.getString(R.string.bottle_label), overrideImageUrl?:beer.labels?.large, CellType.IMAGE)
             if(savedBeer != null) {
-                addCellIfExists(randomCells, "Saved on", beerToUse.dateSaved,CellType.SIMPLE)
+                addCellIfExists(randomCells, context.getString(R.string.saved_on), beerToUse.dateSaved,CellType.SIMPLE)
             }
-            visualBeer.sections.add(VisualBeerSection("Other", randomCells))
+            visualBeer.sections.add(VisualBeerSection(context.getString(R.string.other), randomCells))
 
             //Section: Notes (only if there is a savedBeer)
             if(savedBeer != null) {
@@ -153,7 +154,7 @@ class BeerDetailsVisualizer {
                 beerToUse.notes.forEachIndexed { index, it ->
                     addCellIfExists(notes,it.text,it.dateWritten,CellType.LARGE,true,index)
                 }
-                visualBeer.sections.add(VisualBeerSection("Notes", notes))
+                visualBeer.sections.add(VisualBeerSection(context.getString(R.string.notes), notes))
             }
 
 
@@ -163,13 +164,13 @@ class BeerDetailsVisualizer {
             }
 
 
-            //Add empty header cell to the last section to create some space at the end, feels less crammed
-            addCellIfExists(visualBeer.sections.last().cells, "", "", CellType.HEADER)
+            //Add empty header cell to the last row_beerdetails_header to create some space at the end, feels less crammed
+            addCellIfExists(visualBeer.sections.last().cells, if(beerToUse.iselfMade) "" else context.getString(R.string.data_courtesy_brewerydb), "", CellType.FOOTER)
 
             return visualBeer
         }
 
-        //Private function that adds a cell with the given information to the given section, only if the value is not null
+        //Private function that adds a cell with the given information to the given row_beerdetails_header, only if the value is not null
         // Also handles displaying the value in a correct way, e.g. showing a date righ, showing boolean by "Yes", or "No"
         private fun addCellIfExists(cellList: ArrayList<VisualBeerCell>, header: String, value: Any?, cellType: CellType, deletable: Boolean = false, noteIndex : Int?=null) {
             if (value != null) cellList.add(
@@ -226,5 +227,5 @@ class BeerDetailsVisualizer {
     //Classes for sections and cells, and enum indicating the type of cell
     class VisualBeerSection(val header: String, val cells: ArrayList<VisualBeerCell>)
     class VisualBeerCell(val key: String, val value: String, val cellType: CellType, val isDeletable: Boolean = false, val noteIndex : Int?=null)
-    enum class CellType { SIMPLE, LARGE, IMAGE, HEADER }
+    enum class CellType { SIMPLE, LARGE, IMAGE, HEADER, FOOTER }
 }

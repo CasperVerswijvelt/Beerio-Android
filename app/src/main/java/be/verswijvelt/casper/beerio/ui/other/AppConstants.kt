@@ -1,4 +1,4 @@
-package be.verswijvelt.casper.beerio.ui
+package be.verswijvelt.casper.beerio.ui.other
 
 sealed class AppConstants {
 

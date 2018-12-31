@@ -49,19 +49,19 @@ dependencies {
     implementation "android.arch.lifecycle:viewmodel:1.1.1"
 
     //Networking
-    implementation 'com.github.kittinunf.fuel:fuel:1.16.0'
-    implementation 'com.github.kittinunf.fuel:fuel-moshi:1.16.0'
+    implementation "com.github.kittinunf.fuel:fuel:$rootProject.fuelVersion"
+    implementation "com.github.kittinunf.fuel:fuel-moshi:$rootProject.fuelVersion"
 
     //Time library
-    implementation 'net.danlew:android.joda:2.10.1'
+    implementation "net.danlew:android.joda:$rootProject.jodaTimeVersion"
 
 
     //Loading images
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
 
     //Zoomable images
     //noinspection GradleDependency : Newest version won't compile
-    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation "com.github.chrisbanes:PhotoView:$rootProject.photoViewVersion"
 
 
     // Room components
@@ -75,14 +75,14 @@ dependencies {
 
 
     //Async running of methods
-    implementation "org.jetbrains.anko:anko:$rootProject.anko"
-    implementation "org.jetbrains.anko:anko-common:$rootProject.anko"
+    implementation "org.jetbrains.anko:anko:$rootProject.ankoVersion"
+    implementation "org.jetbrains.anko:anko-common:$rootProject.ankoVersion"
 
     //Debugging of database
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
+    debugImplementation "com.amitshekhar.android:debug-db:$rootProject.debugDbVersion"
 
     //Image picker
     //noinspection GradleDependency : Need this version since fix isnt released yet with a tag
-    implementation 'com.github.akshay2211:PixImagePicker:master-SNAPSHOT'
+    implementation "com.github.akshay2211:PixImagePicker:$rootProject.pixImagePickerVersion"
 
 }

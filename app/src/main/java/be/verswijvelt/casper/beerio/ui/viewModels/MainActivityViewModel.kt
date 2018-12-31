@@ -1,10 +1,8 @@
 package be.verswijvelt.casper.beerio.ui.viewModels
 
 import android.arch.lifecycle.ViewModel
-import be.verswijvelt.casper.beerio.ui.AppConstants
+import be.verswijvelt.casper.beerio.ui.other.AppConstants
 import be.verswijvelt.casper.beerio.ui.fragments.BaseFragment
-import be.verswijvelt.casper.beerio.ui.fragments.CategoriesFragment
-import be.verswijvelt.casper.beerio.ui.fragments.MyBeersFragment
 import java.util.*
 
 class MainActivityViewModel : ViewModel() {

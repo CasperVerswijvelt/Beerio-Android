@@ -60,4 +60,16 @@
     <string name="my_beers_toolbartitle">My beers</string>
     <string name="categories_toolbartitle">Beer categories</string>
     <string name="bottle_label_prefix">Bottle label:</string>
+    <string name="no_beers_saved">You don\'t have any beers saved yet, go add some!</string>
+    <string name="more_info">More info</string>
+    <string name="copy_image_url">Copy image URL</string>
+    <string name="save_image">Save image</string>
+    <string name="data_courtesy_brewerydb">Data courtesy of BreweryDB</string>
+    <string name="saved_on">Saved on</string>
+    <string name="other">Other</string>
+    <string name="notes">Notes</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="basic_info">Basic Info</string>
+    <string name="numbers_and_stuff">Numbers and stuff</string>
 </resources>

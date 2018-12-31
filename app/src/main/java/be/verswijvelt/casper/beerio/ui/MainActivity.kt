@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -24,11 +25,13 @@ import be.verswijvelt.casper.beerio.data.room.BeerRoomDatabase
 import be.verswijvelt.casper.beerio.data.services.BeerRepository
 import be.verswijvelt.casper.beerio.data.services.OnlineDataService
 import be.verswijvelt.casper.beerio.ui.fragments.*
+import be.verswijvelt.casper.beerio.ui.other.AppConstants
 import be.verswijvelt.casper.beerio.ui.viewModels.MainActivityViewModel
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_main.*
 import net.danlew.android.joda.JodaTimeAndroid
+import org.jetbrains.anko.doAsync
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -40,7 +43,10 @@ class MainActivity : AppCompatActivity(), NavigationController {
         ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
     }
 
-    //Listener for navigation item selected
+    //We need to keep a strong reference to this target, else it gets garbage collected since picasso only keeps weak reference
+    private var imageSaveTarget : Target? = null
+
+    //Listener for options_navigation item selected
     private val mOnNavigationItemSelectedListener = OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.tab_my_beers -> {
@@ -56,7 +62,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
         return@OnNavigationItemSelectedListener true
     }
 
-    //Listener for navigation item reselected
+    //Listener for options_navigation item reselected
     private val mOnNavigationItemReselectedListener = BottomNavigationView.OnNavigationItemReselectedListener {
         if (viewModel.currentBackStack().size != 1) {
             while (viewModel.currentBackStack().size != 1) {
@@ -94,17 +100,13 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
     override fun onResume() {
         super.onResume()
-        //Set currenttab in viewmodel according to selected item in navigation bar
+        //Set currenttab in viewmodel according to selected item in options_navigation bar
         viewModel.currentTab = if (navigation.selectedItemId == R.id.tab_my_beers) AppConstants.TAB_MY_BEERS else AppConstants.TAB_BROWSE_ONLINE
         showFragmentForCurrentTab()
 
-        //Setting listeners for navigation item selected, reselected, and toolbar title clicked
+        //Setting listeners for options_navigation item selected, reselected
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         navigation.setOnNavigationItemReselectedListener(mOnNavigationItemReselectedListener)
-        setToolbarTitleClickListener {
-            //Run title clicked handler for the current displayed fragment
-            viewModel.currentBackStack().peek().getTitleClickedHandler().invoke()
-        }
 
     }
 
@@ -115,8 +117,6 @@ class MainActivity : AppCompatActivity(), NavigationController {
         //Remove all listeners
         navigation.setOnNavigationItemSelectedListener(null)
         navigation.setOnNavigationItemReselectedListener(null)
-        removeToolbarTitleClickListener()
-
     }
 
 
@@ -222,7 +222,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
     }
 
 
-
+    //When arrow back is pressed, simulate back button pressed
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
@@ -234,39 +234,13 @@ class MainActivity : AppCompatActivity(), NavigationController {
         supportActionBar?.setDisplayShowHomeEnabled(bool)
     }
 
-    //Helper method to set the toolbar title clicked listener to run a specific lambda when tapped
-    private fun setToolbarTitleClickListener(handler: () -> Unit) {
-        if (toolbar == null)
-            return
-
-        //Find the child of toolbar that is a textview and apply click listener
-        for (i in 0..toolbar.childCount) {
-            if (toolbar.getChildAt(i) is TextView) {
-                (toolbar.getChildAt(i) as TextView).setOnClickListener {
-                    handler()
-                }
-            }
-        }
-    }
-
-    //Helper method to remove toolbar title clicked listener
-    private fun removeToolbarTitleClickListener() {
-        //Find the child of toolbar that is a textview and remove click listener
-        for (i in 0..toolbar.childCount) {
-            if (toolbar.getChildAt(i) is TextView) {
-                (toolbar.getChildAt(i) as TextView).setOnClickListener(null)
-            }
-        }
-    }
-
-
     //NavigationController interface implementation
     override fun showLoader(show: Boolean) {
         progressBar?.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    override fun showToast(text: String) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+    override fun notify(text: String) {
+        Snackbar.make(findViewById(R.id.viewSnack), text, Snackbar.LENGTH_SHORT).show()
     }
 
     override fun showDialog(title: String, text: String?) {
@@ -328,36 +302,40 @@ class MainActivity : AppCompatActivity(), NavigationController {
     // Placed this method in the navigationController because otherwise it would be alot of duplicate code to do it in the other places it was needed
     override fun saveBeerImageLocally(url: String, id: String) {
         val fileName = filesDir.path + "/" + id + ".png"
+        imageSaveTarget = object : Target {
+            override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
+                doAsync {
+                    val file = File(fileName)
+                    try {
+                        file.createNewFile()
+                        val ostream = FileOutputStream(file,false)
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 80, ostream)
+                        ostream.flush()
+                        ostream.close()
+                        Picasso.get().invalidate("file://$fileName")
+                        runOnUiThread {
+                            //Update the beer details fragment to show that the beer has a bottle label available to show, after the image has been saved
+                            (viewModel.currentBackStack().peek() as? BeerDetailsFragment)?.updateData()
+                            imageSaveTarget = null
+                        }
+
+                    } catch (e: IOException) {
+                        Log.e("IOException", e.localizedMessage)
+                    }
+                }
+            }
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                e?.printStackTrace()
+            }
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+            }
+        }
         Picasso.get()
             .load(url)
             .resize(1000,1000)
             .onlyScaleDown()
             .centerCrop()
-            .into(object : Target {
-                override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
-                    Thread(Runnable {
-                        val file = File(fileName)
-                        try {
-                            file.createNewFile()
-                            val ostream = FileOutputStream(file,false)
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 80, ostream)
-                            ostream.flush()
-                            ostream.close()
-                            Picasso.get().invalidate("file://$fileName")
-                            runOnUiThread {
-                                //Update the beer details fragment to show that the beer has a bottle label available to show, after the image has been saved
-                                (viewModel.currentBackStack().peek() as? BeerDetailsFragment)?.updateData()
-                            }
-                        } catch (e: IOException) {
-                            Log.e("IOException", e.localizedMessage)
-                        }
-                    }).start()
-                }
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    e?.printStackTrace()
-                }
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-            })
+            .into(imageSaveTarget!!)
     }
 
     //Remove a beer image from the right location according to beer id
@@ -379,7 +357,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
 interface NavigationController {
     fun showLoader(show: Boolean)
-    fun showToast(text: String)
+    fun notify(text: String)
     fun showDialog(title: String, text: String?)
     fun updateToolbarTitle()
 

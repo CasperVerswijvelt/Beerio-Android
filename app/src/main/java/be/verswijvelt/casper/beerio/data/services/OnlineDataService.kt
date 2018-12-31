@@ -12,7 +12,7 @@ import java.lang.Exception
 import android.content.SharedPreferences
 
 //This is an implementation class of our IOnlineDataService interface.
-// It handles all network calls to the BreweryDB API, to fulfill all data needs for the 'Browse Online' section of this application.
+// It handles all network calls to the BreweryDB API, to fulfill all data needs for the 'Browse Online' row_beerdetails_header of this application.
 class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDataService {
 
     //base Url for our API

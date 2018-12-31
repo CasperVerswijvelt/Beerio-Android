@@ -4,7 +4,7 @@
     <item
             android:id="@+id/saveedit_beer"
             android:icon="@drawable/ic_check_black_24dp"
-            app:showAsAction="always"
+            app:showAsAction="ifRoom"
             android:title="@string/save_edited_created_beer"/>
 
 </menu>
