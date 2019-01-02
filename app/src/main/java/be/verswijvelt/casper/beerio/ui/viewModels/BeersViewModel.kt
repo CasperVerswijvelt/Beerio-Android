@@ -37,6 +37,7 @@ class BeersViewModelFactory(
     private val styleName: String,
     private val styleDescription: String?
 ) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return BeersViewModel(styleId, styleName, styleDescription) as T
     }

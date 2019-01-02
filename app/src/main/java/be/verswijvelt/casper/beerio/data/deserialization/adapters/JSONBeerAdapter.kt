@@ -14,7 +14,7 @@ class JSONBeerAdapter {
         //In this method we build up the actual domain objects according to our json models.
         // The JSON models and my domain model didn't align enough for the conversion to happen automatically, so this way is used.
         val list:ArrayList<Beer> = ArrayList()
-        beerJsonWrapper.data.forEach { beerJson ->
+        beerJsonWrapper.data?.forEach { beerJson ->
 
             val beer = Beer()
 

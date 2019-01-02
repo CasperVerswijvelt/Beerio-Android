@@ -12,10 +12,8 @@ import android.view.*
 import android.widget.EditText
 import android.widget.LinearLayout
 import be.verswijvelt.casper.beerio.R
-import be.verswijvelt.casper.beerio.ui.adapters.BeerDetailsAdapter
 import be.verswijvelt.casper.beerio.data.models.Beer
-import be.verswijvelt.casper.beerio.data.models.Note
-import be.verswijvelt.casper.beerio.data.services.BeerRepository
+import be.verswijvelt.casper.beerio.ui.adapters.BeerDetailsAdapter
 import be.verswijvelt.casper.beerio.ui.other.SwipeToDeleteCallback
 import be.verswijvelt.casper.beerio.ui.viewModels.BeerDetailsViewModel
 import be.verswijvelt.casper.beerio.ui.viewModels.BeerDetailsViewModelFactory

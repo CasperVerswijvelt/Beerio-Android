@@ -98,9 +98,9 @@ class BeerDetailsAdapter(private val navigationController: NavigationController)
     //Function called from fragment when a cell is swiped to delete on the recyclerview
     fun removeAt(position: Int) {
         val index = visualBeer?.getCellAtIndex(position)?.noteIndex
-        if(index != null) {
-            beer!!.notes.removeAt(index)
-            BeerRepository.getInstance().update(beer!!)
+        if(index != null && savedBeer!=null) {
+            savedBeer!!.notes.removeAt(index)
+            BeerRepository.getInstance().update(savedBeer!!)
             notifyItemRemoved(position)
         } else {
             notifyItemChanged(position)
@@ -116,6 +116,7 @@ class BeerDetailsViewHolder(view: View, var isDeletable: Boolean=false) : Recycl
 }
 
 //Class that handles visualisation of a beer object by partitioning it in sections and cells of the right type
+@Suppress("NAME_SHADOWING")
 class BeerDetailsVisualizer {
     companion object {
         fun getVisualRepresesntation(beer: Beer, savedBeer: Beer?, overrideImageUrl: String? = null, context:Context): VisualBeer {
@@ -132,7 +133,7 @@ class BeerDetailsVisualizer {
             val numbersCells: ArrayList<VisualBeerCell> = ArrayList()
             addCellIfExists(numbersCells, context.getString(R.string.original_gravity), beerToUse.originalGravity, CellType.SIMPLE)
             addCellIfExists(numbersCells, context.getString(R.string.alcohol_by_volume), beerToUse.alcoholByVolume, CellType.SIMPLE)
-            addCellIfExists(numbersCells, context.getString(R.string.international_bittering_unit), beer.internationalBitteringUnit, CellType.SIMPLE)
+            addCellIfExists(numbersCells, context.getString(R.string.international_bittering_unit), beerToUse.internationalBitteringUnit, CellType.SIMPLE)
             addCellIfExists(numbersCells, context.getString(R.string.serving_temperature), beerToUse.servingTemperature, CellType.LARGE)
             visualBeer.sections.add(VisualBeerSection(context.getString(R.string.numbers_and_stuff), numbersCells))
 

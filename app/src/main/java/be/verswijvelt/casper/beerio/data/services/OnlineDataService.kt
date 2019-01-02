@@ -21,8 +21,7 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
     //Api key, retrieved from our preferences object that is injected trough the constructor
     private val apiKey : String
         get() {
-            if(preferences == null) return ""
-            return preferences.getString("apiKey","")!!
+            return preferences.getString("apiKey","")?:""
         }
 
     //Fetches all beer categories
@@ -130,7 +129,6 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
             .responseString { _, _, result ->
                 when (result) {
                     is Result.Failure -> {
-                        val ex = result.getException()
                         completion(false)
                     }
                     is Result.Success -> {

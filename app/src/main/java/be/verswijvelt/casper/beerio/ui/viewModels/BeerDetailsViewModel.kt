@@ -1,7 +1,9 @@
 package be.verswijvelt.casper.beerio.ui.viewModels
 
-import android.app.Application
-import android.arch.lifecycle.*
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProvider
 import be.verswijvelt.casper.beerio.data.models.Beer
 import be.verswijvelt.casper.beerio.data.models.Note
 import be.verswijvelt.casper.beerio.data.services.BeerRepository
@@ -51,6 +53,7 @@ class BeerDetailsViewModel(inBeer : Beer) : ViewModel() {
 
 
 class BeerDetailsViewModelFactory(private val beer: Beer) :  ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return BeerDetailsViewModel(beer) as T
     }

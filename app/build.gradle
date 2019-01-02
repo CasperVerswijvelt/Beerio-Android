@@ -84,5 +84,12 @@ dependencies {
     //Image picker
     //noinspection GradleDependency : Need this version since fix isnt released yet with a tag
     implementation "com.github.akshay2211:PixImagePicker:$rootProject.pixImagePickerVersion"
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
 
 }

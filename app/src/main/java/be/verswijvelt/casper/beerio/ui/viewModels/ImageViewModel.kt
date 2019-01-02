@@ -8,6 +8,7 @@ class ImageViewModel(val url : String) : ViewModel()
 
 
 class ImageViewModelFactory(private val url : String) :  ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ImageViewModel(url) as T
     }

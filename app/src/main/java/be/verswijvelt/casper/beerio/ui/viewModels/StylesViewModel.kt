@@ -32,6 +32,7 @@ class StylesViewModel(private val categoryId : Int, val categoryName:String, val
 
 
 class StylesViewModelFactory(private val categoryId: Int, private val categoryName:String, private val cateogryDescription:String?) :  ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return StylesViewModel(categoryId,categoryName,cateogryDescription) as T
     }

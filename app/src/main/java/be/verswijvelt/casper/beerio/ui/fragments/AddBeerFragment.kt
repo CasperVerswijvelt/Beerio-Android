@@ -3,9 +3,7 @@ package be.verswijvelt.casper.beerio.ui.fragments
 import android.app.Activity.RESULT_OK
 import android.app.Dialog
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AlertDialog

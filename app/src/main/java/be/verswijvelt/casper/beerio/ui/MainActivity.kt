@@ -15,8 +15,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
-import android.widget.Toast
 import be.verswijvelt.casper.beerio.R
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONCategory
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONStyle
@@ -83,8 +81,8 @@ class MainActivity : AppCompatActivity(), NavigationController {
         myBeersFragment.fragmentTitle = getString(R.string.my_beers_toolbartitle)
         val categoriesFragment = CategoriesFragment()
         categoriesFragment.fragmentTitle = getString(R.string.categories_toolbartitle)
-        viewModel.backStackForTag(AppConstants.TAB_MY_BEERS)?.push(myBeersFragment)
-        viewModel.backStackForTag(AppConstants.TAB_BROWSE_ONLINE)?.push(categoriesFragment)
+        if(viewModel.backStackForTag(AppConstants.TAB_MY_BEERS).isNullOrEmpty())viewModel.backStackForTag(AppConstants.TAB_MY_BEERS)?.push(myBeersFragment)
+        if(viewModel.backStackForTag(AppConstants.TAB_BROWSE_ONLINE).isNullOrEmpty())viewModel.backStackForTag(AppConstants.TAB_BROWSE_ONLINE)?.push(categoriesFragment)
 
         //Dependency injection
         BeerRepository.getInstance().setBeerDao(BeerRoomDatabase.getDatabase(application).beerDao())
@@ -141,7 +139,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
     //Checks which fragment should currently be show according to our viewModel, and show it
     private fun showFragmentForCurrentTab() {
-        switchFragment(viewModel.currentBackStack().peek(),
+        switchFragment(viewModel.currentFragment(),
             R.anim.fade_in,
             R.anim.fade_out
         )
@@ -164,7 +162,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
     //Pop the currently shown fragment from the backstack for the tab that it is on
     private fun popFragment() {
         viewModel.currentBackStack().pop()
-        switchFragment(viewModel.currentBackStack().peek(), android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+        switchFragment(viewModel.currentFragment(), android.R.anim.slide_in_left, android.R.anim.slide_out_right)
     }
 
 
@@ -200,7 +198,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
     override fun onBackPressed() {
         //If the fragment that should be currently visible is not resumed, it means that our settigns fragment is show.
         // Continue by just showing the fragment for current tab without poping anything from the backstack
-        if (!viewModel.currentBackStack().peek().isResumed) {
+        if (!viewModel.currentFragment().isResumed) {
             showFragmentForCurrentTab()
             return
         }
@@ -253,7 +251,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
     }
 
     override fun updateToolbarTitle() {
-        toolbar.title = viewModel.currentBackStack().peek().fragmentTitle
+        toolbar.title = viewModel.currentFragment().fragmentTitle
     }
 
     override fun showCategory(category: JSONCategory) {
@@ -315,7 +313,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
                         Picasso.get().invalidate("file://$fileName")
                         runOnUiThread {
                             //Update the beer details fragment to show that the beer has a bottle label available to show, after the image has been saved
-                            (viewModel.currentBackStack().peek() as? BeerDetailsFragment)?.updateData()
+                            (viewModel.currentFragment() as? BeerDetailsFragment)?.updateData()
                             imageSaveTarget = null
                         }
 
@@ -370,7 +368,7 @@ interface NavigationController {
     fun exitCurrentFragment()
 
     fun saveBeerImageLocally(url: String, id: String)
-    fun deleteImage(url:String)
+    fun deleteImage(id:String)
 
     fun getFilesDirectory(): File
 

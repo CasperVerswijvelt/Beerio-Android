@@ -4,7 +4,7 @@ package be.verswijvelt.casper.beerio.data.deserialization.jsonModels
 // This way we never have problems with wrongly parsed json data, and we have the freedom of converting these objects to our own implementation
 data class JSONCategory(
     val createDate: String,
-    val description: String,
+    val description: String?,
     val id: Int,
     val name: String,
     val updateDate: String
