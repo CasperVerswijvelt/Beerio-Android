@@ -2,29 +2,30 @@ package be.verswijvelt.casper.beerio.ui.viewModels
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
 import be.verswijvelt.casper.beerio.data.deserialization.jsonModels.JSONCategory
 import be.verswijvelt.casper.beerio.data.services.BeerRepository
 
-class CategoriesViewModel : ViewModel() {
+class CategoriesViewModel : ReloadableViewModel<List<JSONCategory>>()  {
+
+
     private val categories: MutableLiveData<List<JSONCategory>> by lazy {
         MutableLiveData<List<JSONCategory>>()
     }
 
-    init {
-        loadData()
-    }
-
     //Loaddata function so we can later reload the data aswell (by swipe down to refresh)
-    fun loadData() {
+    override fun loadData() {
+        isLoadingData.postValue(true)
         BeerRepository.getInstance().fetchCategories {
             categories.postValue(it)
+            isLoadingData.postValue(false)
         }
     }
 
-
-    fun getCategories(): LiveData<List<JSONCategory>> {
-        return categories
+    override fun hasData(): Boolean {
+        return categories.value != null
     }
 
+    override fun getObservableData(): LiveData<List<JSONCategory>> {
+        return categories
+    }
 }

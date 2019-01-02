@@ -4,18 +4,19 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.widget.LinearLayout
-import be.verswijvelt.casper.beerio.ui.viewModels.CategoriesViewModel
-import be.verswijvelt.casper.beerio.ui.adapters.CategoryAdapter
-import kotlinx.android.synthetic.main.fragment_categories.*
 import android.view.*
-import kotlinx.android.synthetic.main.error_placeholder.*
+import android.widget.LinearLayout
+import be.verswijvelt.casper.beerio.ui.adapters.CategoryAdapter
+import be.verswijvelt.casper.beerio.ui.viewModels.CategoriesViewModel
+import be.verswijvelt.casper.beerio.ui.viewModels.ReloadableViewModel
+import kotlinx.android.synthetic.main.fragment_categories.*
 
 
-
-class CategoriesFragment : BaseFragment() {
+class CategoriesFragment : ReloadableFragment() {
     private val viewModel by lazy {
-        ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
+        val model = ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
+        super.reloadableViewModel = model as? ReloadableViewModel<List<*>>
+        model
     }
 
 
@@ -29,30 +30,29 @@ class CategoriesFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //Hook our swipe refresh layoutinto our superclass: ReloadableFragment
+        super.swipeRefreshLayout = swipeRefresh
+
         //Set adapter and layoutmanager for our recyclerview
         recyclerView.adapter = CategoryAdapter(navigationController)
         recyclerView.layoutManager = LinearLayoutManager(this.context, LinearLayout.VERTICAL, false)
-        showLoader(true)
 
         //Observe fetched categories and if value changes and it is null, give empty list to adapter, else, give the given list to the adapter
-        viewModel.getCategories().observe(this, Observer {
-            if(it != null) {
-                (recyclerView.adapter as CategoryAdapter).setCategories(it)
-            } else {
-                (recyclerView.adapter as CategoryAdapter).setCategories(listOf())
-            }
-            //Show error placeholder if updated value is null
-            error_placeholder.visibility = if(it == null) View.VISIBLE else View.GONE
-            showLoader(false)
-            swipeRefresh.isRefreshing = false
+        viewModel.getObservableData().observe(this, Observer {
+            (recyclerView.adapter as CategoryAdapter).setCategories(it ?: listOf())
         })
+
+        //Ask base fragment to load data using the reloadableViewModel we set
+        reloadDataConditionally()
+
     }
 
     override fun onResume() {
         super.onResume()
         //Set swipe to refresh listener
         swipeRefresh.setOnRefreshListener {
-            viewModel.loadData()
+            loadData()
         }
     }
 

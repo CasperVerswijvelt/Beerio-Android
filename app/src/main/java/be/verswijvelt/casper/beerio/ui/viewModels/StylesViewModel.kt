@@ -8,24 +8,27 @@ import android.arch.lifecycle.ViewModelProvider
 import be.verswijvelt.casper.beerio.data.services.BeerRepository
 
 
-class StylesViewModel(private val categoryId : Int, val categoryName:String, val cateogryDescription:String?) : ViewModel() {
+class StylesViewModel(private val categoryId : Int, val categoryName:String, val cateogryDescription:String?) : ReloadableViewModel<List<JSONStyle>>()  {
 
     private val styles: MutableLiveData<List<JSONStyle>> by lazy {
         MutableLiveData<List<JSONStyle>>()
     }
 
-    init {
-        loadData()
-    }
 
     //Loaddata function so we can later reload the data aswell (by swipe down to refresh)
-    fun loadData() {
+    override fun loadData() {
+        isLoadingData.postValue(true)
         BeerRepository.getInstance().fetchStyles(categoryId) {
             styles.postValue(it)
+            isLoadingData.postValue(false)
         }
     }
 
-    fun getStyles() : LiveData<List<JSONStyle>> {
+    override fun hasData(): Boolean {
+        return styles.value != null
+    }
+
+    override fun getObservableData(): LiveData<List<JSONStyle>> {
         return styles
     }
 }

@@ -105,7 +105,8 @@ class BeerDetailsFragment : BaseFragment() {
                     .setTitle(getString(R.string.add_note))
                     .setView(input)
                     .setPositiveButton(getString(R.string.add)) { _, _ ->
-                        viewModel.addNoteToBeer(input.text.toString())
+                        if(viewModel.addNoteToBeer(input.text.toString()))
+                            navigationController.notify(getString(R.string.note_added))
                     }
                     .setNegativeButton(android.R.string.cancel
                     ) { dialog, _ -> dialog.cancel() }
@@ -134,7 +135,8 @@ class BeerDetailsFragment : BaseFragment() {
                 if(img != null) {
                     navigationController.saveBeerImageLocally(img,viewModel.getBeer().value!!.id)
                 }
-                viewModel.saveBeer()
+                if(viewModel.saveBeer())
+                    navigationController.notify(getString(R.string.beer_Saved))
                 true
             }
             be.verswijvelt.casper.beerio.R.id.delete_beer -> {
@@ -145,7 +147,11 @@ class BeerDetailsFragment : BaseFragment() {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(
                         android.R.string.yes
-                    ) { _, _ ->  viewModel.deleteBeer() }
+                    ) { _, _ ->
+                        if(viewModel.deleteBeer())
+                            navigationController.notify(getString(R.string.beer_deleted))
+
+                    }
                     .setNegativeButton(android.R.string.no, null).show()
                 true
             }

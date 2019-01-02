@@ -23,24 +23,33 @@ class BeerDetailsViewModel(inBeer : Beer) : ViewModel() {
 
 
     //Savebeer function that delegates it's work to the beer repository
-    fun saveBeer()  {
+    fun saveBeer() : Boolean {
         beer.value.let {
-            BeerRepository.getInstance().insert(beer.value!!)
+            if(it == null)
+                return false
+            BeerRepository.getInstance().insert(it)
+            return true
         }
     }
 
     //Deletebeer function that delegates it's work to the beer repository
-    fun deleteBeer() {
+    fun deleteBeer() : Boolean{
         beer.value.let {
-            BeerRepository.getInstance().delete(beer.value!!.id)
+            if(it == null)
+                return false
+            BeerRepository.getInstance().delete(it.id)
+            return true
         }
     }
 
     //AddNoteToBeer function that adds a note to the savedBeer and delegate saving to beer repository
-    fun addNoteToBeer(note:String) {
+    fun addNoteToBeer(note:String) : Boolean{
         savedBeer.value.let {
-            it!!.notes.add(Note(note.trim()))
+            if(it == null)
+                return false
+            it.notes.add(Note(note.trim()))
             BeerRepository.getInstance().update(it)
+            return true
         }
     }
 

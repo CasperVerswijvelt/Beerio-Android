@@ -71,4 +71,10 @@
     <string name="description">Description</string>
     <string name="basic_info">Basic Info</string>
     <string name="numbers_and_stuff">Numbers and stuff</string>
+    <string name="beer_deleted">Beer deleted!</string>
+    <string name="beer_Saved">Beer saved!</string>
+    <string name="note_added">Note added!</string>
+    <string name="wifi_connected_reloading">Connected, trying to reload data…</string>
+    <string name="image_url_copied">Image URL copied to clipboard</string>
+    <string name="approve_permissions">You must approve the asked permissions to select an image.</string>
 </resources>

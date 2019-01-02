@@ -59,7 +59,7 @@ class ImageFragment : BaseFragment() {
                 val clip = ClipData.newPlainText("Image url", viewModel.url)
                 clipboard!!.primaryClip = clip
 
-                navigationController.notify("Image URL copied to clipboard")
+                navigationController.notify(getString(R.string.image_url_copied))
                 true
             }
             else -> {

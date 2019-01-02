@@ -2,13 +2,15 @@ package be.verswijvelt.casper.beerio.ui
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener
-import android.support.design.widget.Snackbar
+import android.support.design.widget.Snackbar.*
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -24,6 +26,7 @@ import be.verswijvelt.casper.beerio.data.services.BeerRepository
 import be.verswijvelt.casper.beerio.data.services.OnlineDataService
 import be.verswijvelt.casper.beerio.ui.fragments.*
 import be.verswijvelt.casper.beerio.ui.other.AppConstants
+import be.verswijvelt.casper.beerio.ui.other.WifiReceiver
 import be.verswijvelt.casper.beerio.ui.viewModels.MainActivityViewModel
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
@@ -88,8 +91,16 @@ class MainActivity : AppCompatActivity(), NavigationController {
         BeerRepository.getInstance().setBeerDao(BeerRoomDatabase.getDatabase(application).beerDao())
         BeerRepository.getInstance().setOnlineDataService(OnlineDataService(PreferenceManager.getDefaultSharedPreferences(this)))
 
+        //Layout
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        //Register wifi listener
+        registerReceiver(WifiReceiver {
+            if (it) (viewModel.currentFragment() as? ReloadableFragment)?.connectedStateChanged(it)
+        }, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).apply {
+            addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+        })
 
         showLoader(false)
 
@@ -137,7 +148,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
         }
     }
 
-    //Checks which fragment should currently be show according to our viewModel, and show it
+    //Checks which fragment should currently be show according to our reloadableViewModel, and show it
     private fun showFragmentForCurrentTab() {
         switchFragment(viewModel.currentFragment(),
             R.anim.fade_in,
@@ -168,6 +179,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
     //Handle the switching of displayed fragment, contained in a single method
     private fun switchFragment(fragment: Fragment, enterAnimation: Int? = null, exitAnimation: Int? = null) {
+        showLoader(false)
         val manager = supportFragmentManager
         val ft = manager.beginTransaction()
         if (enterAnimation != null && exitAnimation != null) ft.setCustomAnimations(enterAnimation, exitAnimation)
@@ -176,7 +188,6 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
         //Update toolbar title according to current shown fragment
         updateToolbarTitle()
-        showLoader(false)
 
         //Only show back button if there are more than 1 fragment on the current backstack
         showBackButton(viewModel.currentBackStack().size > 1)
@@ -237,8 +248,8 @@ class MainActivity : AppCompatActivity(), NavigationController {
         progressBar?.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    override fun notify(text: String) {
-        Snackbar.make(findViewById(R.id.viewSnack), text, Snackbar.LENGTH_SHORT).show()
+    override fun notify(text: String, length: Int) {
+        make(findViewById(R.id.viewSnack), text, length).show()
     }
 
     override fun showDialog(title: String, text: String?) {
@@ -355,7 +366,7 @@ class MainActivity : AppCompatActivity(), NavigationController {
 
 interface NavigationController {
     fun showLoader(show: Boolean)
-    fun notify(text: String)
+    fun notify(text: String, length: Int = LENGTH_SHORT)
     fun showDialog(title: String, text: String?)
     fun updateToolbarTitle()
 

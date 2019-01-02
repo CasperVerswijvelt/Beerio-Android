@@ -42,7 +42,7 @@ class MyBeersFragment : BaseFragment() {
         //Set customizable text of our no-data-placeholder
         noDataText.text = getString(R.string.no_beers_saved)
 
-        //Observe the beers on our viewModel, if new value is null, give empty list to our adapter, else, give the given list to our adapter
+        //Observe the beers on our reloadableViewModel, if new value is null, give empty list to our adapter, else, give the given list to our adapter
         viewModel.beers.observe(this, Observer {
             if(it != null) {
                 (recyclerView.adapter as MyBeerAdapter).setMyBeers(it)

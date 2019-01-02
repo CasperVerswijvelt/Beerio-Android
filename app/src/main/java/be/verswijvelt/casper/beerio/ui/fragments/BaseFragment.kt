@@ -7,8 +7,10 @@ import be.verswijvelt.casper.beerio.ui.NavigationController
 
 //BaseFragment class, is super class of all my fragments (except settings fragment) to minimize duplicate code in these fragments
 abstract class BaseFragment : Fragment() {
-    var fragmentTitle : String =""
+
+    var fragmentTitle: String = ""
     protected lateinit var navigationController: NavigationController
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +22,7 @@ abstract class BaseFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {}
 
-    fun showLoader(show:Boolean) {
+    open fun showLoader(show: Boolean) {
         navigationController.showLoader(show)
     }
 }

@@ -4,8 +4,10 @@ import android.app.Activity.RESULT_OK
 import android.app.Dialog
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.view.*
 import android.widget.ImageButton
@@ -17,6 +19,7 @@ import be.verswijvelt.casper.beerio.ui.viewModels.AddBeerViewModel
 import be.verswijvelt.casper.beerio.ui.viewModels.AddBeerViewModelFactory
 import be.verswijvelt.casper.beerio.utils.actualValue
 import com.fxn.pix.Pix
+import com.fxn.utility.PermUtil
 import kotlinx.android.synthetic.main.fragment_add_beer.*
 import org.joda.time.DateTime
 import java.io.File
@@ -173,6 +176,7 @@ class AddBeerFragment : BaseFragment() {
     }
 
 
+    //Handle activity result of image picker
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         //If resultcode is ok and requestcode is 6969, the code which we set when starting our image picker intent,
@@ -182,7 +186,20 @@ class AddBeerFragment : BaseFragment() {
             if(returnValue != null)
                 viewModel.selectedImage.set("file://$returnValue")
         }
+    }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showImagePicker()
+                } else {
+                    navigationController.notify(getString(R.string.approve_permissions),Snackbar.LENGTH_LONG)
+                }
+                return
+            }
+        }
     }
 
 

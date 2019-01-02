@@ -31,9 +31,7 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
             .responseString { _, _, result ->
                 when (result) {
                     is Result.Failure -> {
-                        val ex = result.getException()
                         completion(null)
-                        ex.printStackTrace(System.out)
                     }
                     is Result.Success -> {
 
@@ -47,7 +45,6 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
                             val categories = jsonAdapter.fromJson(data)
                             completion(categories?.data)
                         } catch (e: Exception) {
-                            e.printStackTrace()
                             completion(null)
                         }
 
@@ -63,9 +60,7 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
             .responseString { _, _, result ->
                 when (result) {
                     is Result.Failure -> {
-                        val ex = result.getException()
                         completion(null)
-                        ex.printStackTrace(System.out)
                     }
                     is Result.Success -> {
 
@@ -81,7 +76,6 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
                                 it.categoryId == categoryId
                             })
                         } catch (e: Exception) {
-                            e.printStackTrace()
                             completion(null)
                         }
 
@@ -97,9 +91,7 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
             .responseString { _, _, result ->
                 when (result) {
                     is Result.Failure -> {
-                        val ex = result.getException()
                         completion(null)
-                        ex.printStackTrace(System.out)
                     }
                     is Result.Success -> {
 
@@ -113,7 +105,6 @@ class OnlineDataService(private var preferences : SharedPreferences) : IOnlineDa
                             val beers = jsonAdapter.fromJson(data)
                             completion(beers)
                         } catch (e: Exception) {
-                            e.printStackTrace()
                             completion(null)
                         }
                     }
